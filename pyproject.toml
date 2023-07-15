@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "ocrhelper"
+version = "0.1.0"
+description = "Tool for translating text from the screen and some more"
+authors = ["Sergei <reyangood@gmail.com>"]
+readme = "README.md"
+packages = [{include = "ocrhelper"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+flake8 = "^6.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
