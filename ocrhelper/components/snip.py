@@ -4,7 +4,7 @@ import pyautogui
 
 
 class SnipButton(ttk.Frame):
-    def __init__(self, master: tk.Tk, trigger_func):
+    def __init__(self, master: tk.Tk, app):
         super().__init__()
         self.snip_surface = None
         self.master: tk.Tk = master
@@ -12,14 +12,14 @@ class SnipButton(ttk.Frame):
         self.start_y = None
         self.current_x = None
         self.current_y = None
-        self.trigger_func = trigger_func
+        self.app = app
 
         self.snipButton = ttk.Button(
             self,
             command=self.create_screen_canvas,
-            text="press to translate",
+            text="Нажми для перевода",
         )
-        self.snipButton.pack()
+        self.snipButton.pack(expand=True, fill="both")
 
         self.master_screen = tk.Toplevel(self.master)
         self.master_screen.withdraw()
@@ -58,7 +58,10 @@ class SnipButton(ttk.Frame):
 
         if (
             self.coordinates_validator(
-                self.start_x, self.current_x, self.start_y, self.current_y
+                self.start_x,
+                self.current_x,
+                self.start_y,
+                self.current_y,
             )
             is False
         ):
@@ -125,12 +128,16 @@ class SnipButton(ttk.Frame):
         return True
 
     def display_rectangle_position(self):
-        print(self.start_x)
-        print(self.start_y)
-        print(self.current_x)
-        print(self.current_y)
+        print(
+            "координаты:",
+            self.start_x,
+            self.start_y,
+            self.current_x,
+            self.current_y,
+        )
 
     def take_bounded_screenshot(self, x1, y1, x2, y2):
         image = pyautogui.screenshot(region=(x1, y1, x2, y2))
-        image.save('test_img.png')
-        self.trigger_func(image)
+        print("размер изображения:", image.size)
+        image.save("test_img.png")
+        self.app.trigger_func(image, (x1, y1))
