@@ -7,11 +7,14 @@ readme = "README.md"
 packages = [{include = "ocrhelper"}]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.10, <3.11"
 pyautogui = "^0.9.54"
 pillow = "9.5.0"
 numpy = "^1.25.1"
 deep-translator = {extras = ["ai"], version = "^1.11.4"}
+pystray = "^0.19.4"
+keyboard = "^0.13.5"
+pyclip = "^0.7.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
