@@ -25,7 +25,7 @@ class TextRecognition:
                 self.recognition(image, lang, pytesser_lang, use_paddle=False)
 
             case _:
-                lang = ('en',)
+                lang = ("en",)
                 self.recognition(image, lang, "eng", use_paddle=True)
 
     def recognition(self, image, lang, pytesser_lang, use_paddle=False):
@@ -33,7 +33,7 @@ class TextRecognition:
         if conf == 1:
             self.text = text
             return
-        
+
         if isinstance(lang, tuple | list) and use_paddle is True:
             self.messages("negative", conf, text, "Использую Paddle")
 
@@ -42,7 +42,7 @@ class TextRecognition:
                 self.text = text
                 return
 
-        self.messages("negative", conf, text, "Использую EasyOCR")
+        self.messages("negative", text, conf, "Использую EasyOCR")
         text = self.easy_ocr(image, lang)
 
         self.text = text
@@ -129,6 +129,6 @@ class TextRecognition:
             case "positive":
                 print(f"{info}Сойдет, conf={conf}")
                 print(f"{info}{text}")
-    
+
     def get_text(self):
         return self.text

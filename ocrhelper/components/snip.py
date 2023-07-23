@@ -7,6 +7,7 @@ class SnipButton(ttk.Frame):
     def __init__(self, master: tk.Tk, app):
         super().__init__()
         self.snip_surface = None
+        self.canvas_on_screen = False
         self.master: tk.Tk = master
         self.start_x = None
         self.start_y = None
@@ -28,8 +29,11 @@ class SnipButton(ttk.Frame):
         self.picture_frame.pack(fill="both", expand=True)
 
     def create_screen_canvas(self):
+        if self.canvas_on_screen:
+            return
+        self.canvas_on_screen = True
+
         self.master_screen.deiconify()
-        self.master.withdraw()
 
         self.snip_surface = tk.Canvas(
             self.picture_frame, cursor="cross", bg="grey11"
@@ -110,7 +114,6 @@ class SnipButton(ttk.Frame):
     def exit_screenshot_mode(self):
         self.snip_surface.destroy()
         self.master_screen.withdraw()
-        self.master.deiconify()
 
     def on_snip_drag(self, event):
         self.current_x, self.current_y = (event.x, event.y)
@@ -137,7 +140,10 @@ class SnipButton(ttk.Frame):
         )
 
     def take_bounded_screenshot(self, x1, y1, x2, y2):
+        self.canvas_on_screen = False
+
         image = pyautogui.screenshot(region=(x1, y1, x2, y2))
         print("размер изображения:", image.size)
         image.save("test_img.png")
+
         self.app.trigger_func(image, (x1, y1))

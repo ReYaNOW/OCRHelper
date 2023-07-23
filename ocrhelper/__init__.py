@@ -1,9 +1,16 @@
-import tkinter as tk
+from pystray import MenuItem as item
+import pystray
+from PIL import Image
 from tkinter import ttk
-from PIL import ImageTk
-from ocrhelper.components.snip import SnipButton
-from ocrhelper.components.ocr import TextRecognition
+import tkinter as tk
+import keyboard
+import pyclip
+
 from ocrhelper.components.translation import translation, TranslatedWindow
+from ocrhelper.components.ocr import TextRecognition
+from ocrhelper.components.snip import SnipButton
+
+icon_path = r"C:\Users\ReYaN\python_projects\OCRHelper\ocrhelper\icon.ico"
 
 
 class App(tk.Tk):
@@ -14,6 +21,19 @@ class App(tk.Tk):
         self.geometry("500x400")
         self.iconbitmap("icon.ico")
 
+        # self.bind("<FocusOut>", lambda event: self.withdraw())
+
+        # tray
+        image = Image.open(icon_path)
+
+        menu = (
+            item("Open menu", self.show_window, default=True),
+            item("Exit", self.quit_window),
+        )
+        icon = pystray.Icon("OCRHelper", image, "OCRHelper", menu)
+        icon.run_detached()
+        self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())
+
         # adding snipping tool
         button = SnipButton(self, self)
         button.place(
@@ -23,6 +43,9 @@ class App(tk.Tk):
             relwidth=0.5,
             anchor="center",
         )
+
+        # add hotkey for snipping tool
+        keyboard.add_hotkey("alt + x", callback=button.create_screen_canvas)
 
         # frame with configuration widgets
         self.config_widgets_frame = ttk.Frame(self)
@@ -72,7 +95,7 @@ class App(tk.Tk):
             "Faster ChatGPT",
             "Faster ChatGPT streaming",
         ]
-        self.translation_var = tk.StringVar(value="Faster ChatGPT")
+        self.translation_var = tk.StringVar(value="Google Translator")
 
         self.translator_menu = ttk.Combobox(self.config_widgets_frame)
         self.translator_menu.configure(values=translators)
@@ -80,6 +103,19 @@ class App(tk.Tk):
         self.translator_menu.configure(state="readonly")
         self.translator_menu.grid(
             column=3, row=1, padx=10, pady=3, sticky="nw"
+        )
+
+        # clipboard checkbox
+        self.clipboard_var = tk.BooleanVar(value=True)
+        self.clipboard_check = ttk.Checkbutton(
+            self.config_widgets_frame,
+            text="Добавлять считанный текст в буфер обмена",
+            variable=self.clipboard_var,
+            onvalue=True,
+            offvalue=False,
+        )
+        self.clipboard_check.grid(
+            column=0, row=2, columnspan=6, padx=10, sticky="n"
         )
 
         # run
@@ -97,9 +133,18 @@ class App(tk.Tk):
         check_button.pack()
 
     def validate_lang_var(self):
-        print("eng", self.check_eng_var.get(), "rus", self.check_rus_var.get())
         if not self.check_eng_var.get() and not self.check_rus_var.get():
             self.check_eng_var.set("en")
+
+    def quit_window(self, icon):
+        self.show_window()
+
+        icon.visible = False
+        self.quit()
+        icon.stop()
+
+    def show_window(self):
+        self.after(0, self.deiconify)
 
     def trigger_func(self, image, coordinates):
         print(coordinates)
@@ -126,6 +171,10 @@ class App(tk.Tk):
             to_lang="russian",
             translator=self.translation_var.get(),
         )
+
+        if self.clipboard_var:
+            pyclip.copy(text)
+
         print(translated_text)
         TranslatedWindow(image, text, translated_text, (x1, y1))
 

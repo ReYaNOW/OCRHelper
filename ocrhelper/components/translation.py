@@ -26,6 +26,7 @@ def translation(text, from_lang, to_lang, translator="google"):
                 api_key=os.environ["GPT_API_KEY"],
                 target=gpt_lang_convert(to_lang),
             )
+           
             return translator_obj.translate(text=text)
 
         case "Faster ChatGPT":
