@@ -1,49 +1,39 @@
-from paddleocr import PaddleOCR
-import pytesseract
-import easyocr
-
 import numpy
+import pytesseract
 from PIL import ImageEnhance
 
+from components.debug_window import DebugWindow
 
-pytesseract.pytesseract.tesseract_cmd = (
-    r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-)
+# pytesseract.pytesseract.tesseract_cmd = (
+#     r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+# )
 
 
 class TextRecognition:
-    def __init__(self, image, languages):
+    def __init__(self, image, languages, easyocr_model, debug_window):
+        self.image = image
+        self.languages = languages
+        self.easyocr_model = easyocr_model
+        self.debug_window: DebugWindow = debug_window
+
         self.text = None
+        self.current_ocr = None
 
-        match languages:
-            case "ru":
-                self.recognition(image, "ru", "rus", use_paddle=False)
+        self.debug_window.add_message("Начинаю распознавание\n", "white")
 
-            case "en+ru":
-                lang = ("en", "ru")
-                pytesser_lang = "eng+rus"
-                self.recognition(image, lang, pytesser_lang, use_paddle=False)
+        self.recognition(image, languages)
 
-            case _:
-                lang = ("en",)
-                self.recognition(image, lang, "eng", use_paddle=True)
-
-    def recognition(self, image, lang, pytesser_lang, use_paddle=False):
+    def recognition(self, image, pytesser_lang):
+        self.current_ocr = "PyTesseract"
         text, conf = self.try_pytesseract(image, pytesser_lang)
         if conf == 1:
             self.text = text
             return
 
-        if isinstance(lang, tuple | list) and use_paddle is True:
-            self.messages("negative", conf, text, "Использую Paddle")
-
-            text, conf = self.try_paddle(image, lang[0])
-            if conf == 1:
-                self.text = text
-                return
-
         self.messages("negative", text, conf, "Использую EasyOCR")
-        text = self.easy_ocr(image, lang)
+
+        text = self.easy_ocr(image)
+        self.messages("positive", text, 1)
 
         self.text = text
         return
@@ -51,21 +41,15 @@ class TextRecognition:
     # Попытка распознать символы с PYTESSERACT
     def try_pytesseract(self, image, lang):
         print("[INFO]Использую PyTesseract")
+        self.debug_window.add_message("Использую PyTesseract", "white")
+
         text, conf = self.pytesseract_ocr(image, lang)
 
         if conf is not None:
-            if conf >= 89:
+            if conf >= 89 and conf != 95.0 and text:
                 self.messages("positive", text, conf)
+                text = text.replace("|", "I")
                 return text, 1
-        return text, conf
-
-    # Попытка распознать символы с PADDLE
-    def try_paddle(self, image, lang):
-        text, conf = self.paddle_ocr(image, lang=lang)
-        if conf >= 0.8:
-            self.messages("positive", text, conf)
-            return text, 1
-
         return text, conf
 
     @staticmethod
@@ -80,7 +64,7 @@ class TextRecognition:
         )
         result = pytesseract.image_to_data(
             res,
-            config=f"--oem 3  --psm 7 -l {lang}",
+            config=f"-l {lang}",
             output_type="data.frame",
         )
         result = result[result.conf != -1]
@@ -97,38 +81,45 @@ class TextRecognition:
         conf = result.groupby(["block_num"])["conf"].mean()[1]
         return text, conf
 
-    @staticmethod
-    def paddle_ocr(image, lang):
-        print(lang)
-        ocr = PaddleOCR(use_angle_cls=True, lang=lang)
-        result = ocr.ocr(numpy.array(image), cls=True, det=False)
-
-        text, conf = None, None
-        for i in range(len(result)):
-            res = result[i]
-            for line in res:
-                text, conf = line
-        return text, conf
-
-    @staticmethod
-    def easy_ocr(image, lang):
-        reader = easyocr.Reader(lang)
+    def easy_ocr(self, image):
+        reader = self.easyocr_model["model"]
         result = reader.readtext(
-            numpy.array(image), paragraph=True, batch_size=16, detail=0
+            numpy.array(image),
+            paragraph=True,
+            batch_size=12,
+            detail=0,
+            decoder="wordbeamsearch",
+            beamWidth=15,
         )
+        print(result)
         return " ".join(result)
 
-    @staticmethod
-    def messages(type_of_operation, text=None, conf=None, nextocr=None):
+    def messages(self, type_of_operation, text=None, conf=None, nextocr=None):
         info = "[INFO]"
         match type_of_operation:
             case "negative":
                 print(f"{info}Не сойдет, conf={conf}")
                 print(f"{info}{text}")
                 print(f"{info}{nextocr}")
+
+                self.debug_window.add_message(
+                    f"{self.current_ocr} не справился\n", "orange"
+                )
+                self.debug_window.add_message(nextocr, "white")
+                self.debug_window.tkinter_update()
             case "positive":
                 print(f"{info}Сойдет, conf={conf}")
                 print(f"{info}{text}")
+
+                if nextocr == "last":
+                    enter = ""
+                else:
+                    enter = "\n"
+
+                self.debug_window.add_message(
+                    "Текст успешно распознан\n", "green", enter=enter
+                )
+                self.debug_window.tkinter_update()
 
     def get_text(self):
         return self.text
