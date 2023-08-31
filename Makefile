@@ -4,4 +4,4 @@ install:
 	pip install easyocr pytesseract
 update:
 	poetry update
-	pip install --upgrade torch torchvision torchaudio easyocr pytesseract paddlepaddle paddleocr
+	pip install --upgrade torch torchvision pytesseract easyocr
