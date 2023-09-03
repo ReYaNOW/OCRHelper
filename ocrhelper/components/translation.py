@@ -153,7 +153,7 @@ class TranslatedWindow:
         """Create a new frame with borders inside the given window"""
         image_frame = tk.Frame(
             new_window,
-            highlightbackground="black",
+            highlightbackground="grey",
             highlightthickness=1,
         )
         image_frame.pack(expand=True, fill="both")
@@ -167,13 +167,14 @@ class TranslatedWindow:
             "wraplength": self.width,
             "font": ("Arial", 12),
             "anchor": "center",
+            'fg': '#000'
         }
         if is_variable:
             arguments["textvariable"] = text
         else:
             arguments["text"] = text
 
-        return ttk.Label(**arguments)
+        return tk.Label(**arguments)
 
     def window_trigger(self):
         self.debug_window.clear_text_area()

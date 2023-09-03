@@ -51,10 +51,12 @@ class SnippingTool:
         self.snip_surface.bind("<ButtonPress-1>", self.on_button_press)
         self.snip_surface.bind("<B1-Motion>", self.on_snip_drag)
         self.snip_surface.bind("<ButtonRelease-1>", self.on_button_release)
-        self.snip_surface.bind("<ButtonRelease-3>", self.exit_screenshot_mode)
+        self.snip_surface.bind(
+            "<ButtonRelease-3>", self.destroy_screenshot_mode
+        )
 
         # add hotkey to stop process of recognition and translation
-        keyboard.add_hotkey("escape", callback=self.exit_screenshot_mode)
+        keyboard.add_hotkey("escape", callback=self.destroy_screenshot_mode)
 
         self.master_screen.attributes("-fullscreen", True)
         self.master_screen.attributes("-alpha", 0.3)
@@ -90,7 +92,7 @@ class SnippingTool:
             )
             is False
         ):
-            return self.exit_screenshot_mode()
+            return self.destroy_screenshot_mode()
 
         if self.start_x <= self.current_x and self.start_y <= self.current_y:
             print("right down")
@@ -153,14 +155,16 @@ class SnippingTool:
         )
 
     def exit_screenshot_mode(self, _=None):
-        self.debug_window.clear_text_area()
-        self.debug_window.window.withdraw()
-
         self.screenshot_window.withdraw()
 
         self.canvas_on_screen = False
         self.snip_surface.destroy()
         self.master_screen.withdraw()
+
+    def destroy_screenshot_mode(self, _=None):
+        self.exit_screenshot_mode()
+        self.debug_window.clear_text_area()
+        self.debug_window.window.withdraw()
 
     def create_screenshot_window(self):
         self.screenshot_window = tk.Toplevel(master=self.master)

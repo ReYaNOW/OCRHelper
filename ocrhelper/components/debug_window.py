@@ -3,10 +3,6 @@ import tkinter as tk
 from PIL import Image as im
 from PIL import ImageTk
 
-image_path = (
-    r"C:\Users\ReYaN\python_projects\OCRHelper\ocrhelper\debug_label.png"
-)
-
 
 class DebugWindow:
     def __init__(self, master):
@@ -19,7 +15,7 @@ class DebugWindow:
         frame.pack()
 
         # add label status
-        img = ImageTk.PhotoImage(im.open(image_path))
+        img = ImageTk.PhotoImage(im.open(r"assets\debug_label.png"))
         label = tk.Label(frame, image=img, background="white")
         label.image = img
         label.pack(expand=True, fill="x")

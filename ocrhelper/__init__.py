@@ -14,8 +14,6 @@ from ocrhelper.components.ocr import TextRecognition
 from ocrhelper.components.snip import SnippingTool
 from ocrhelper.components.translation import translation, TranslatedWindow
 
-icon_path = r"C:\Users\ReYaN\python_projects\OCRHelper\ocrhelper\icon.ico"
-
 
 class App(tk.Tk):
     """A class to create a graphical user interface for an OCR
@@ -44,10 +42,14 @@ class App(tk.Tk):
         super().__init__()
         self.title("OCR Helper")
         self.geometry("500x400")
-        self.iconbitmap("icon.ico")
+        self.iconbitmap(r"assets\icon.ico")
+
+        # Styles
+        self.call("source", r"theme\sv.tcl")
+        self.call("set_theme", "sv-dark")
 
         # tray
-        image = Image.open(icon_path)
+        image = Image.open(r"assets\icon.ico")
 
         menu = (
             item("Open menu", self.show_window, default=True),
