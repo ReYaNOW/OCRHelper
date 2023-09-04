@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import TclError
 
 import keyboard
 from PIL import ImageTk, ImageGrab
@@ -156,9 +157,12 @@ class SnippingTool:
 
     def exit_screenshot_mode(self, _=None):
         self.screenshot_window.withdraw()
-
-        self.snip_surface.delete("all")
-        self.snip_surface.update()
+        
+        try:
+            self.snip_surface.delete("all")
+            self.snip_surface.update()
+        except TclError:
+            pass
 
         self.canvas_on_screen = False
         self.snip_surface.destroy()
