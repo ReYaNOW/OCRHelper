@@ -12,9 +12,6 @@ class SnippingTool:
         self.app_update = app_update
         self.snip_trigger = snip_trigger
         self.debug_window: DebugWindow = debug_window
-
-        self.mask = None
-        self.picture_frame = None
         self.snip_surface = None
         self.canvas_on_screen = False
         self.screenshot_window = None
@@ -26,18 +23,22 @@ class SnippingTool:
         self.current_x = None
         self.current_y = None
 
+        self.master_screen = tk.Toplevel(self.master)
+        self.master_screen.withdraw()
+        self.master_screen.attributes("-transparent", "maroon3")
+        self.picture_frame = tk.Frame(self.master_screen)
+        self.picture_frame.pack(fill="both", expand=True)
+
         self.create_screenshot_window()
 
     def display_snipping_tool(self):
-        self.create_mask()
-        
         if self.canvas_on_screen:
             return
 
         self.canvas_on_screen = True
 
         self.display_screenshot_window()
-        self.mask.deiconify()
+        self.master_screen.deiconify()
 
         self.snip_surface = tk.Canvas(
             self.picture_frame,
@@ -57,19 +58,12 @@ class SnippingTool:
         # add hotkey to stop process of recognition and translation
         keyboard.add_hotkey("escape", callback=self.destroy_screenshot_mode)
 
-        self.mask.attributes("-fullscreen", True)
-        self.mask.attributes("-alpha", 0.3)
-        self.mask.lift()
-        self.mask.attributes("-topmost", True)
+        self.master_screen.attributes("-fullscreen", True)
+        self.master_screen.attributes("-alpha", 0.3)
+        self.master_screen.lift()
+        self.master_screen.attributes("-topmost", True)
 
         self.display_debug_window()
-
-    def create_mask(self):
-        self.mask = tk.Toplevel(self.master)
-        self.mask.withdraw()
-        self.mask.attributes("-transparent", "maroon3")
-        self.picture_frame = tk.Frame(self.mask)
-        self.picture_frame.pack(fill="both", expand=True)
 
     def display_debug_window(self):
         self.debug_window.window.deiconify()
@@ -163,9 +157,12 @@ class SnippingTool:
     def exit_screenshot_mode(self, _=None):
         self.screenshot_window.withdraw()
 
+        self.snip_surface.delete("all")
+        self.snip_surface.update()
+
         self.canvas_on_screen = False
         self.snip_surface.destroy()
-        self.mask.destroy()
+        self.master_screen.withdraw()
 
     def destroy_screenshot_mode(self, _=None):
         self.exit_screenshot_mode()
