@@ -38,7 +38,6 @@ class TextRecognition:
         self.text = text
         return
 
-    # Попытка распознать символы с PYTESSERACT
     def try_pytesseract(self, image, lang):
         print("[INFO]Использую PyTesseract")
         self.debug_window.add_message("Использую PyTesseract", "white")
@@ -46,7 +45,7 @@ class TextRecognition:
         text, conf = self.pytesseract_ocr(image, lang)
 
         if conf is not None:
-            if conf >= 89 and conf != 95.0 and text:
+            if conf >= 92 and conf != 95.0 and text:
                 self.messages("positive", text, conf)
                 text = text.replace("|", "I")
                 return text, 1

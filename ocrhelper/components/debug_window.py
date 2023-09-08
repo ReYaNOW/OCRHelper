@@ -29,7 +29,8 @@ class DebugWindow:
             font=("Verdana", 12),
         )
 
-        self.text_area.bind("<Key>", lambda e: "break")
+        # make text area read-only
+        self.text_area.bind("<Key>", lambda event: "break")
 
         self.text_area.tag_config("white", foreground="#F8F8F2")
         self.text_area.tag_config("orange", foreground="#F89580")
@@ -39,8 +40,8 @@ class DebugWindow:
         self.window.withdraw()
 
     def add_message(self, text, color, enter="\n"):
-        self.text_area.insert(tk.END, f"{text}{enter}", color)
-        self.text_area.see(tk.END)
+        self.text_area.insert("end", f"{text}{enter}", color)
+        self.text_area.see("end")
 
     def clear_text_area(self):
         self.text_area.delete("1.0", "end")
@@ -50,3 +51,6 @@ class DebugWindow:
 
     def tkinter_withdraw(self):
         self.window.withdraw()
+
+    def tkinter_deiconify(self):
+        self.window.deiconify()

@@ -1,7 +1,6 @@
 import os
 import tkinter as tk
 from time import sleep
-from tkinter import ttk
 
 import g4f
 import keyboard
@@ -11,71 +10,9 @@ from deep_translator import GoogleTranslator, ChatGptTranslator
 from components.debug_window import DebugWindow
 
 
-def translation(text, from_lang, to_lang, translator="google"):
-    print(f"[INFO]using {translator}")
-    match translator:
-        case "Google Translator":
-            if from_lang not in ("ru", "en"):
-                from_lang_checked = "auto"
-            else:
-                from_lang_checked = from_lang
-
-            translator_obj = GoogleTranslator(
-                source=from_lang_checked,
-                target=to_lang,
-            )
-            return translator_obj.translate(text=text)
-
-        case "ChatGPT":
-            translator_obj = ChatGptTranslator(
-                api_key=os.environ["GPT_API_KEY"],
-                target=gpt_lang_convert(to_lang),
-            )
-
-            return translator_obj.translate(text=text)
-
-        case "Faster ChatGPT":
-            from_lang_conv = gpt_lang_convert(from_lang)
-            to_lang_conv = gpt_lang_convert(to_lang)
-            return better_gpt(text, from_lang_conv, to_lang_conv)
-
-        case "Faster ChatGPT streaming":
-            from_lang_conv = gpt_lang_convert(from_lang)
-            to_lang_conv = gpt_lang_convert(to_lang)
-            return better_gpt(
-                text, from_lang_conv, to_lang_conv, use_stream=True
-            )
-
-
-def better_gpt(text, from_lang, to_lang, use_stream=False):
-    request = f"Please translate the user message from {from_lang} to\
-     {to_lang}. Make the translation sound as natural as possible.\
-      In answer write only translation.\n\n {text}"
-
-    response = g4f.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        provider=g4f.Provider.GetGpt,
-        messages=[{"role": "user", "content": request}],
-        stream=use_stream,
-    )
-    return response
-
-
-def gpt_lang_convert(language):
-    print("gpt_lang_convert", language)
-    match language:
-        case "eng":
-            return "english"
-        case "rus":
-            return "russian"
-        case "eng+rus":
-            return "english and russian"
-        case _:
-            return language
-
-
 class TranslatedWindow:
     """Create a tkinter window for displaying translated text"""
+
     def __init__(self, app, image, text_related, debug_window, use_gpt_stream):
         self.image = image
         self.original_text = text_related["text"]
@@ -167,7 +104,6 @@ class TranslatedWindow:
             "wraplength": self.width,
             "font": ("Arial", 12),
             "anchor": "center",
-            'fg': '#000'
         }
         if is_variable:
             arguments["textvariable"] = text
@@ -195,3 +131,66 @@ class TranslatedWindow:
 
                     self.new_window.update()
                     word = ""
+
+
+def translation(text, from_lang, to_lang, translator="Google Translator"):
+    print(f"[INFO]using {translator}")
+    match translator:
+        case "Google Translator":
+            if from_lang not in ("ru", "en"):
+                from_lang_checked = "auto"
+            else:
+                from_lang_checked = from_lang
+
+            translator_obj = GoogleTranslator(
+                source=from_lang_checked,
+                target=to_lang,
+            )
+            return translator_obj.translate(text=text)
+
+        case "ChatGPT":
+            translator_obj = ChatGptTranslator(
+                api_key=os.environ["GPT_API_KEY"],
+                target=gpt_lang_convert(to_lang),
+            )
+
+            return translator_obj.translate(text=text)
+
+        case "Faster ChatGPT":
+            from_lang_conv = gpt_lang_convert(from_lang)
+            to_lang_conv = gpt_lang_convert(to_lang)
+            return better_gpt(text, from_lang_conv, to_lang_conv)
+
+        case "Faster ChatGPT streaming":
+            from_lang_conv = gpt_lang_convert(from_lang)
+            to_lang_conv = gpt_lang_convert(to_lang)
+            return better_gpt(
+                text, from_lang_conv, to_lang_conv, use_stream=True
+            )
+
+
+def better_gpt(text, from_lang, to_lang, use_stream=False):
+    request = f"Please translate the user message from {from_lang} to\
+     {to_lang}. Make the translation sound as natural as possible.\
+      In answer write only translation.\n\n {text}"
+
+    response = g4f.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        provider=g4f.Provider.GetGpt,
+        messages=[{"role": "user", "content": request}],
+        stream=use_stream,
+    )
+    return response
+
+
+def gpt_lang_convert(language):
+    print("gpt_lang_convert", language)
+    match language:
+        case "eng":
+            return "english"
+        case "rus":
+            return "russian"
+        case "eng+rus":
+            return "english and russian"
+        case _:
+            return language

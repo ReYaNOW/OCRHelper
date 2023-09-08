@@ -16,17 +16,9 @@ from ocrhelper.components.translation import translation, TranslatedWindow
 
 
 class App(tk.Tk):
-    """A class to create a graphical user interface for an OCR
-    (Optical Character Recognition) application.
+    """Create a GUI for an OCR (Optical Character Recognition) application.
 
-
-    This class creates a window with various widgets including
-    a snipping tool, language selection buttons,
-    translator selection menu, and a checkbox to control whether
-    the recognized text is added to the clipboard.
-
-
-    It also loads an EasyOCR model upon initialization.
+    Also load an EasyOCR model upon initialization.
     """
 
     def __init__(self):
@@ -45,8 +37,8 @@ class App(tk.Tk):
         self.iconbitmap(r"assets\icon.ico")
 
         # Styles
-        self.call("source", r"theme\sv.tcl")
-        self.call("set_theme", "sv-dark")
+        # self.call("source", r"theme\sv.tcl")
+        # self.call("set_theme", "sv-dark")
 
         # tray
         image = Image.open(r"assets\icon.ico")
@@ -67,7 +59,7 @@ class App(tk.Tk):
         label_text = "Нажми CTRL + Shift + X,\n \
          чтобы запустить окно для перевода"
         hotkey_label = ttk.Label(self, text=label_text, font=("Arial", 18))
-        snipping_tool = SnippingTool(
+        self.snipping_tool = SnippingTool(
             self, self.update, self.snip_trigger, self.debug_window
         )
         hotkey_label.place(
@@ -79,7 +71,8 @@ class App(tk.Tk):
 
         # add hotkey for snipping tool
         keyboard.add_hotkey(
-            "ctrl + shift + x", callback=snipping_tool.display_snipping_tool
+            "ctrl + shift + x",
+            callback=self.snipping_tool.display_snipping_tool,
         )
 
         # frame with configuration widgets
