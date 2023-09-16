@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+from loguru import logger
 import easyocr
 import keyboard
 import numpy
@@ -22,43 +23,43 @@ class App(tk.Tk):
     """
 
     def __init__(self):
-        self.easyocr_lang = ["en"]
+        self.easyocr_langs = ['en']
         self.faster_gpt_stream = False
 
         self.easy_ocr = {}
         self.load_easyocr_model()
-        img = Image.open("load_easyocr.png")
-        self.easy_ocr["model"].readtext(numpy.array(img))
+        img = Image.open('load_easyocr.png')
+        self.easy_ocr['model'].readtext(numpy.array(img))
 
         # create window
         super().__init__()
-        self.title("OCR Helper")
-        self.geometry("500x400")
-        self.iconbitmap(r"assets\icon.ico")
+        self.title('OCR Helper')
+        self.geometry('500x400')
+        self.iconbitmap(r'assets\icon.ico')
 
         # Styles
         # self.call("source", r"theme\sv.tcl")
         # self.call("set_theme", "sv-dark")
 
         # tray
-        image = Image.open(r"assets\icon.ico")
+        image = Image.open(r'assets\icon.ico')
 
         menu = (
-            item("Open menu", self.show_window, default=True),
-            item("Exit", self.quit_window),
+            item('Open menu', self.show_window, default=True),
+            item('Exit', self.quit_window),
         )
 
-        icon = pystray.Icon("OCRHelper", image, "OCRHelper", menu)
+        icon = pystray.Icon('OCRHelper', image, 'OCRHelper', menu)
         icon.run_detached()
-        self.protocol("WM_DELETE_WINDOW", lambda: self.withdraw())
+        self.protocol('WM_DELETE_WINDOW', lambda: self.withdraw())
 
         # add debug window
         self.debug_window = DebugWindow(self)
 
         # add snipping tool
-        label_text = "Нажми CTRL + Shift + X,\n \
-         чтобы запустить окно для перевода"
-        hotkey_label = ttk.Label(self, text=label_text, font=("Arial", 18))
+        label_text = 'Нажми CTRL + Shift + X,\n \
+         чтобы запустить окно для перевода'
+        hotkey_label = ttk.Label(self, text=label_text, font=('Arial', 18))
         self.snipping_tool = SnippingTool(
             self, self.update, self.snip_trigger, self.debug_window
         )
@@ -66,12 +67,12 @@ class App(tk.Tk):
             relx=0.5,
             rely=0.37,
             relheight=0.5,
-            anchor="center",
+            anchor='center',
         )
 
-        # add hotkey for snipping tool
+        # hotkey for snipping tool
         keyboard.add_hotkey(
-            "ctrl + shift + x",
+            'ctrl + shift + x',
             callback=self.snipping_tool.display_snipping_tool,
         )
 
@@ -82,7 +83,7 @@ class App(tk.Tk):
             rely=1,
             relheight=0.35,
             relwidth=1,
-            anchor="s",
+            anchor='s',
         )
         self.config_widgets_frame.rowconfigure(0, weight=1)
         self.config_widgets_frame.rowconfigure(1, weight=1)
@@ -92,51 +93,52 @@ class App(tk.Tk):
             weight=1,
         )
 
-        # label for check button
+        # label for check buttons
         self.check_buttons_label = ttk.Label(
             self.config_widgets_frame,
-            text="Должен быть выбран хотя бы один язык",
-            font=("Arial", 14),
+            text='Должен быть выбран хотя бы один язык',
+            font=('Arial', 14),
         )
         self.check_buttons_label.grid(column=0, columnspan=6, row=0)
 
+        # frame for check buttons
         self.check_buttons_frame = ttk.Frame(self.config_widgets_frame)
         self.check_buttons_frame.grid(
-            column=2, row=1, padx=10, pady=3, sticky="nw"
+            column=2, row=1, padx=10, pady=3, sticky='nw'
         )
 
         # add change language buttons
-        self.check_eng_var = tk.StringVar(value="eng")
+        self.check_eng_var = tk.StringVar(value='eng')
         self.add_check_button(
-            text="ENG", onvalue="eng", var=self.check_eng_var
+            text='ENG', onvalue='eng', var=self.check_eng_var
         )
 
         self.check_rus_var = tk.StringVar()
         self.add_check_button(
-            text="RUS", onvalue="rus", var=self.check_rus_var
+            text='RUS', onvalue='rus', var=self.check_rus_var
         )
 
         # drop down menu for different translators
         translators = [
-            "Google Translator",
-            "ChatGPT",
-            "Faster ChatGPT",
-            "Faster ChatGPT streaming",
+            'Google Translator',
+            'ChatGPT',
+            'Faster ChatGPT',
+            'Faster ChatGPT streaming',
         ]
-        self.translator_var = tk.StringVar(value="Google Translator")
+        self.translator_var = tk.StringVar(value='Google Translator')
 
         self.translator_menu = ttk.Combobox(self.config_widgets_frame)
         self.translator_menu.configure(values=translators)
         self.translator_menu.configure(textvariable=self.translator_var)
-        self.translator_menu.configure(state="readonly")
+        self.translator_menu.configure(state='readonly')
 
-        self.translator_menu.grid(column=3, row=1, padx=6, pady=3, sticky="nw")
+        self.translator_menu.grid(column=3, row=1, padx=6, pady=3, sticky='nw')
 
         # clipboard checkbox
         self.clipboard_var = tk.BooleanVar(value=True)
         self.clipboard_check = ttk.Checkbutton(
             self.config_widgets_frame,
-            text="Добавлять считанный текст в буфер обмена",
+            text='Добавлять считанный текст в буфер обмена',
             variable=self.clipboard_var,
             onvalue=True,
             offvalue=False,
@@ -147,31 +149,22 @@ class App(tk.Tk):
         )
 
         # add label for loading models status
-        self.loading_easyocr_var = tk.StringVar(value="EasyOCR загружен")
+        self.loading_easyocr_var = tk.StringVar(value='EasyOCR загружен')
         self.loading_easyocr_label = ttk.Label(
             self.config_widgets_frame,
             wraplength=64,
-            font=("Arial", 10),
+            font=('Arial', 10),
             textvariable=self.loading_easyocr_var,
-            anchor="nw",
+            anchor='nw',
         )
-        self.loading_easyocr_label.grid(column=1, row=1, sticky="n")
+        self.loading_easyocr_label.grid(column=1, row=1, sticky='n')
 
         # run
         self.mainloop()
 
     def add_check_button(self, text: str, onvalue: str, var: tk.StringVar):
-        """create a Checkbutton widget with the specified text,
-          onvalue and textvariable, and command.
-        Args:
-           self: Reference to the current object of the class.
-           text (str): The text to be displayed next to the checkbutton.
-           onvalue: The value to be assigned to the check_var when
-            the checkbutton is selected.
-           var: The variable to be associated with the Checkbutton and
-           store its state.
-        Returns:
-           None
+        """create a checkbutton widget with the specified text,
+        onvalue, textvariable and command.
         """
         check_button = ttk.Checkbutton(
             self.check_buttons_frame,
@@ -179,19 +172,22 @@ class App(tk.Tk):
             variable=var,
             command=self.validate_lang_var,
             onvalue=onvalue,
-            offvalue="",
+            offvalue='',
         )
         check_button.pack()
 
     def load_easyocr_model(self):
-        """Loads the EasyOCR model for the specified language.
+        """Load EasyOCR model for the specified language.
         Args:
            self: Reference to the current object of the class.
-        Returns:
-           None
         """
-        self.easy_ocr["lang"] = self.easyocr_lang
-        self.easy_ocr["model"] = easyocr.Reader(self.easyocr_lang)
+        self.easy_ocr['lang'] = self.easyocr_langs
+        logger.info(
+            f'Загрузка модели EasyOCR c {", ".join(self.easyocr_langs)}'
+        )
+
+        self.easy_ocr['model'] = easyocr.Reader(self.easyocr_langs)
+        logger.success('Модель EasyOCR была успешно загружена')
 
     def validate_lang_var(self):
         """Validate the language variables.
@@ -200,30 +196,26 @@ class App(tk.Tk):
         Returns:
            None
         """
-        en_var = self.check_eng_var.get()
-        ru_var = self.check_rus_var.get()
+        eng_var = self.check_eng_var.get()
+        rus_var = self.check_rus_var.get()
 
-        if not en_var and not ru_var:
-            self.check_eng_var.set("eng")
+        if not eng_var and not rus_var:
+            self.check_eng_var.set('eng')
 
         # adapt lang variables to work with easyocr by removing third letter
-        marked_languages = [lang[:-1] for lang in (en_var, ru_var) if lang]
+        marked_languages = [lang[:-1] for lang in (eng_var, rus_var) if lang]
 
-        if self.easyocr_lang != marked_languages:
-            self.easyocr_lang = marked_languages
-            self.loading_easyocr_var.set("Загрузка EasyOCR")
+        if self.easyocr_langs != marked_languages:
+            self.easyocr_langs = marked_languages
+            self.loading_easyocr_var.set('Загрузка EasyOCR')
 
             self.update()
             self.load_easyocr_model()
-            self.loading_easyocr_var.set("EasyOCR загружен")
+            self.loading_easyocr_var.set('EasyOCR загружен')
 
     def show_window(self):
         """Deiconify the window, make it visible if it was
-           previously hidden.
-        Args:
-           self: A reference to the App.
-        Returns:
-           None
+        previously hidden.
         """
         self.after(0, self.deiconify)
 
@@ -240,7 +232,7 @@ class App(tk.Tk):
         rus_var = self.check_rus_var.get()
 
         if eng_var and rus_var:
-            languages = f"{eng_var}+{rus_var}"
+            languages = f'{eng_var}+{rus_var}'
 
         elif not eng_var and rus_var:
             languages = rus_var
@@ -250,9 +242,17 @@ class App(tk.Tk):
 
         return languages
 
-    def snip_trigger(self, image, coordinates):
+    def snip_trigger(self, image: Image.Image, coordinates: tuple):
+        """Trigger when a screenshot is taken. Performs OCR on the image,
+         translates the text, and displays the result.
+
+        Args:
+            image: The captured screenshot image.
+
+            coordinates: The coordinates of the captured screenshot.
+        """
         # add message to debug window that screenshot is received successfully
-        self.debug_window.add_message("Скриншот был получен", "green")
+        self.debug_window.add_message('Скриншот был получен', 'green')
         self.update()
 
         # get languages from tkinter variables
@@ -264,13 +264,11 @@ class App(tk.Tk):
         )
         text = recognition_result.get_text()
 
-        print(f"[INFO]Исходный текст={text}")
-
         # get chosen translator from variable and put it on debug window
         translator = self.translator_var.get()
         self.debug_window.add_message(
-            f"Перевод при помощи —\n{translator}\n",
-            color="white",
+            f'Перевод при помощи —\n{translator}\n',
+            color='white',
         )
         self.update()
 
@@ -278,11 +276,13 @@ class App(tk.Tk):
         translated_text = translation(
             text=text,
             from_lang=languages,
-            to_lang="russian",
+            to_lang='russian',
             translator=translator,
         )
+        logger.success('Текст успешно переведен')
+        logger.info(f'Переведенный текст = {translated_text}')
 
-        if translator == "Faster ChatGPT streaming":
+        if translator == 'Faster ChatGPT streaming':
             self.faster_gpt_stream = True
 
         # add recognized text to clipboard if checkbutton is selected
@@ -295,14 +295,14 @@ class App(tk.Tk):
             self,
             image,
             {
-                "text": text,
-                "translated_text": translated_text,
-                "coordinates": (x1, y1),
+                'text': text,
+                'translated_text': translated_text,
+                'coordinates': (x1, y1),
             },
             self.debug_window,
             self.faster_gpt_stream,
         )
-        self.debug_window.add_message("Перевод прошел успешно!", "green")
+        self.debug_window.add_message('Перевод прошел успешно!', 'green')
         self.faster_gpt_stream = False
 
 

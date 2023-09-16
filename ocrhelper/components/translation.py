@@ -2,6 +2,7 @@ import os
 import tkinter as tk
 from time import sleep
 
+from loguru import logger
 import g4f
 import keyboard
 from PIL import ImageTk
@@ -15,32 +16,32 @@ class TranslatedWindow:
 
     def __init__(self, app, image, text_related, debug_window, use_gpt_stream):
         self.image = image
-        self.original_text = text_related["text"]
-        self.translated_text = text_related["translated_text"]
-        self.coordinates = text_related["coordinates"]
+        self.original_text = text_related['text']
+        self.translated_text = text_related['translated_text']
+        self.coordinates = text_related['coordinates']
         self.use_gpt_stream = use_gpt_stream
         self.debug_window: DebugWindow = debug_window
 
         # create new window to display recognized and translated text
         self.new_window = tk.Toplevel(app)
         self.new_window.overrideredirect(True)
-        self.new_window.attributes("-topmost", True)
+        self.new_window.attributes('-topmost', True)
 
         # ensure that translation window is in the focus to make
         # <FocusOut> 100% work
         self.new_window.after(1, lambda: self.new_window.focus_force())
-        self.new_window.bind("<FocusOut>", lambda event: self.window_trigger())
+        self.new_window.bind('<FocusOut>', lambda event: self.window_trigger())
 
         self.new_window.bind(
-            "<ButtonRelease>", lambda event: self.window_trigger()
+            '<ButtonRelease>', lambda event: self.window_trigger()
         )
 
         # add hotkey to close this window if needed
-        keyboard.add_hotkey("escape", callback=self.window_trigger)
+        keyboard.add_hotkey('escape', callback=self.window_trigger)
 
         # change window position to the place where user took a screenshot
         x1, y1 = self.coordinates
-        self.new_window.geometry(f"+{int(x1)}+{int(y1)}")
+        self.new_window.geometry(f'+{int(x1)}+{int(y1)}')
 
         # pack frame with image
         image_frame = self.frame_with_borders(self.new_window)
@@ -60,7 +61,7 @@ class TranslatedWindow:
             self.original_text,
         )
 
-        recognized_text_label.pack(expand=True, fill="x")
+        recognized_text_label.pack(expand=True, fill='x')
 
         # create and pack label with Translated text
         translated_text_frame = self.frame_with_borders(self.new_window)
@@ -79,7 +80,7 @@ class TranslatedWindow:
                 self.translated_text,
             )
 
-        translated_text_label.pack(expand=True, fill="x")
+        translated_text_label.pack(expand=True, fill='x')
 
         # start loop if translated text is not a str, but generator
         if self.use_gpt_stream:
@@ -90,25 +91,25 @@ class TranslatedWindow:
         """Create a new frame with borders inside the given window"""
         image_frame = tk.Frame(
             new_window,
-            highlightbackground="grey",
+            highlightbackground='grey',
             highlightthickness=1,
         )
-        image_frame.pack(expand=True, fill="both")
+        image_frame.pack(expand=True, fill='both')
         return image_frame
 
     def custom_label(self, frame, text: str | tk.StringVar, is_variable=False):
         """Create a custom label with specified parameters"""
         arguments = {
-            "master": frame,
-            "background": "light grey",
-            "wraplength": self.width,
-            "font": ("Arial", 12),
-            "anchor": "center",
+            'master': frame,
+            'background': 'light grey',
+            'wraplength': self.width,
+            'font': ('Arial', 12),
+            'anchor': 'center',
         }
         if is_variable:
-            arguments["textvariable"] = text
+            arguments['textvariable'] = text
         else:
-            arguments["text"] = text
+            arguments['text'] = text
 
         return tk.Label(**arguments)
 
@@ -119,7 +120,7 @@ class TranslatedWindow:
 
     def stream_loop(self):
         """Display translated text in real-time if GPT stream is used"""
-        word = ""
+        word = ''
         for elem in self.translated_text:
             sleep(0.07)
             for char in elem:
@@ -130,15 +131,15 @@ class TranslatedWindow:
                     self.translation_var.set(current_text + word + char)
 
                     self.new_window.update()
-                    word = ""
+                    word = ''
 
 
-def translation(text, from_lang, to_lang, translator="Google Translator"):
-    print(f"[INFO]using {translator}")
+def translation(text, from_lang, to_lang, translator='Google Translator'):
+    logger.info(f'Перевод при помощи {translator}')
     match translator:
-        case "Google Translator":
-            if from_lang not in ("ru", "en"):
-                from_lang_checked = "auto"
+        case 'Google Translator':
+            if from_lang not in ('ru', 'en'):
+                from_lang_checked = 'auto'
             else:
                 from_lang_checked = from_lang
 
@@ -148,20 +149,20 @@ def translation(text, from_lang, to_lang, translator="Google Translator"):
             )
             return translator_obj.translate(text=text)
 
-        case "ChatGPT":
+        case 'ChatGPT':
             translator_obj = ChatGptTranslator(
-                api_key=os.environ["GPT_API_KEY"],
+                api_key=os.environ['GPT_API_KEY'],
                 target=gpt_lang_convert(to_lang),
             )
 
             return translator_obj.translate(text=text)
 
-        case "Faster ChatGPT":
+        case 'Faster ChatGPT':
             from_lang_conv = gpt_lang_convert(from_lang)
             to_lang_conv = gpt_lang_convert(to_lang)
             return better_gpt(text, from_lang_conv, to_lang_conv)
 
-        case "Faster ChatGPT streaming":
+        case 'Faster ChatGPT streaming':
             from_lang_conv = gpt_lang_convert(from_lang)
             to_lang_conv = gpt_lang_convert(to_lang)
             return better_gpt(
@@ -170,27 +171,26 @@ def translation(text, from_lang, to_lang, translator="Google Translator"):
 
 
 def better_gpt(text, from_lang, to_lang, use_stream=False):
-    request = f"Please translate the user message from {from_lang} to\
+    request = f'Please translate the user message from {from_lang} to\
      {to_lang}. Make the translation sound as natural as possible.\
-      In answer write only translation.\n\n {text}"
+      In answer write only translation.\n\n {text}'
 
     response = g4f.ChatCompletion.create(
-        model="gpt-3.5-turbo",
+        model='gpt-3.5-turbo',
         provider=g4f.Provider.GetGpt,
-        messages=[{"role": "user", "content": request}],
+        messages=[{'role': 'user', 'content': request}],
         stream=use_stream,
     )
     return response
 
 
 def gpt_lang_convert(language):
-    print("gpt_lang_convert", language)
     match language:
-        case "eng":
-            return "english"
-        case "rus":
-            return "russian"
-        case "eng+rus":
-            return "english and russian"
+        case 'eng':
+            return 'english'
+        case 'rus':
+            return 'russian'
+        case 'eng+rus':
+            return 'english and russian'
         case _:
             return language

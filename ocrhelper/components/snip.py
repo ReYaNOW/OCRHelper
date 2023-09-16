@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from loguru import logger
 import keyboard
 from PIL import ImageTk, ImageGrab
 
@@ -29,10 +30,10 @@ class SnippingTool:
 
         self.w = self.master.winfo_screenwidth()
         self.h = self.master.winfo_screenheight()
-        self.master_screen.geometry(f"{self.w}x{self.h}+0+0")
+        self.master_screen.geometry(f'{self.w}x{self.h}+0+0')
 
         # add hotkey to stop process of recognition and translation
-        keyboard.add_hotkey("escape", callback=self.destroy_screenshot_mode)
+        keyboard.add_hotkey('escape', callback=self.destroy_screenshot_mode)
 
     def display_snipping_tool(self):
         if self.canvas_on_screen:
@@ -46,7 +47,7 @@ class SnippingTool:
         self.snip_surface.create_image(self.w / 2, self.h / 2, image=image)
         self.snip_surface.image = image
 
-        self.master_screen.attributes("-topmost", True)
+        self.master_screen.attributes('-topmost', True)
         self.master_screen.deiconify()
         self.display_debug_window()
 
@@ -55,32 +56,30 @@ class SnippingTool:
         canvas = tk.Canvas(self.master_screen, width=self.w, height=self.h)
         canvas.pack()
         canvas.configure(highlightthickness=0)
-        canvas.configure(cursor="crosshair")
-        canvas.configure(background="black")
+        canvas.configure(cursor='crosshair')
+        canvas.configure(background='black')
 
         # set events
-        canvas.bind("<ButtonPress-1>", self.on_button_press)
-        canvas.bind("<B1-Motion>", self.on_snip_drag)
-        canvas.bind("<ButtonRelease-1>", self.on_button_release)
+        canvas.bind('<ButtonPress-1>', self.on_button_press)
+        canvas.bind('<B1-Motion>', self.on_snip_drag)
+        canvas.bind('<ButtonRelease-1>', self.on_button_release)
         canvas.bind(
-            "<ButtonPress-3>", lambda e: self.debug_window.tkinter_withdraw()
+            '<ButtonPress-3>', lambda e: self.debug_window.tkinter_withdraw()
         )
-        canvas.bind("<ButtonRelease-3>", self.destroy_screenshot_mode)
+        canvas.bind('<ButtonRelease-3>', self.destroy_screenshot_mode)
         return canvas
 
     def display_debug_window(self):
         self.debug_window.tkinter_deiconify()
-        self.debug_window.add_message("Ожидание скриншота", "white")
+        self.debug_window.add_message('Ожидание скриншота', 'white')
         self.app_update()
 
     def on_button_press(self, event):
         # save mouse drag start position
         self.start_x = self.snip_surface.canvasx(event.x)
         self.start_y = self.snip_surface.canvasy(event.y)
-        print(self.start_x, self.start_y)
-
         self.rect = self.snip_surface.create_rectangle(
-            0, 0, 1, 1, outline="red", width=2
+            0, 0, 1, 1, outline='red', width=2
         )
 
     def on_button_release(self, _):
@@ -95,10 +94,12 @@ class SnippingTool:
             )
             is False
         ):
+            logger.warning('Была выбрана слишком маленькая область, \
+распознавание отменено')
             return self.destroy_screenshot_mode()
 
         if self.start_x <= self.current_x and self.start_y <= self.current_y:
-            print("right down")
+            print('right down')
             self.exit_screenshot_mode()
             self.take_bounded_screenshot(
                 self.start_x,
@@ -108,7 +109,7 @@ class SnippingTool:
             )
 
         elif self.start_x >= self.current_x and self.start_y <= self.current_y:
-            print("left down")
+            print('left down')
             self.exit_screenshot_mode()
             self.take_bounded_screenshot(
                 self.current_x,
@@ -118,7 +119,7 @@ class SnippingTool:
             )
 
         elif self.start_x <= self.current_x and self.start_y >= self.current_y:
-            print("right up")
+            print('right up')
             self.exit_screenshot_mode()
             self.take_bounded_screenshot(
                 self.start_x,
@@ -128,7 +129,7 @@ class SnippingTool:
             )
 
         elif self.start_x >= self.current_x and self.start_y >= self.current_y:
-            print("left up")
+            print('left up')
             self.exit_screenshot_mode()
             self.take_bounded_screenshot(
                 self.current_x,
@@ -149,15 +150,14 @@ class SnippingTool:
         )
 
     def display_rectangle_position(self):
-        print(
-            "координаты:",
-            self.start_x,
-            self.start_y,
-            self.current_x,
-            self.current_y,
+        logger.debug(
+            f'координаты: {self.start_x} {self.start_y} {self.current_x} \
+{self.current_y}'
         )
 
     def exit_screenshot_mode(self, _=None):
+        if not self.canvas_on_screen:
+            return
         self.canvas_on_screen = False
         self.snip_surface.destroy()
         self.master_screen.update()
@@ -197,8 +197,7 @@ class SnippingTool:
                 pillow_y2 + correction,
             ),
         )
-        # image = pyautogui.screenshot(region=(x1+3, y1+3, x2+3, y2+3))
-        print("размер изображения:", image.size)
-        image.save("test_image.png")
+        logger.debug(f'размер изображения: {image.size}')
+        image.save('test_image.png')
 
         self.snip_trigger(image, (x1, y1))
