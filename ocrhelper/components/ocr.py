@@ -1,13 +1,7 @@
 import numpy
-import pytesseract
-from PIL import ImageEnhance
 from loguru import logger
 
 from components.debug_window import DebugWindow
-
-# pytesseract.pytesseract.tesseract_cmd = (
-#     r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-# )
 
 
 class TextRecognition:
@@ -22,71 +16,16 @@ class TextRecognition:
 
         self.debug_window.add_message('Начинаю распознавание\n', 'white')
 
-        self.recognition(image, languages)
+        self.recognition(image)
 
-    def recognition(self, image, pytesser_lang):
-        self.current_ocr = 'PyTesseract'
-        text, status = self.try_pytesseract(image, pytesser_lang)
-        if status == 'success':
-            self.text = text
-            return
-
+    def recognition(self, image):
         text = self.easy_ocr(image)
         self.messages('positive', text, 1)
-
         self.text = text
         return
 
-    def try_pytesseract(self, image, lang):
-        logger.info('Использую PyTesseract')
-        self.debug_window.add_message('Использую PyTesseract', 'white')
-
-        text, conf = self.pytesseract_ocr(image, lang)
-        status = 'success'
-        if conf >= 92 and conf != 95.0 and text:
-            self.messages('positive', text, conf)
-            text = text.replace('|', 'I')
-            return text, status
-
-        self.messages('negative', text, conf, 'Использую EasyOCR')
-        status = 'failure'
-        return text, status
-
-    @staticmethod
-    def pytesseract_ocr(image, lang):
-        enhancer = ImageEnhance.Contrast(image)
-        img = enhancer.enhance(2)
-
-        # Преобразуем в черно-белый рисунок:
-        thresh = 200
-        res = img.convert('L').point(
-            lambda x: 255 if x > thresh else 0, mode='1'
-        )
-        result = pytesseract.image_to_data(
-            res,
-            config=f'-l {lang}',
-            output_type='data.frame',
-        )
-        result = result[result.conf != -1]
-        lines = result.groupby('block_num')['text'].apply(list)
-
-        if lines.empty:
-            logger.warning('PyTesseract не нашел текста на изображении')
-            return None, 0
-
-        # getting simple list
-        line = next(iter(lines))
-
-        text = " ".join(line)
-        conf = result.groupby(['block_num'])['conf'].mean()[1]
-
-        if conf is None:
-            conf = 0
-
-        return text, conf
-
     def easy_ocr(self, image):
-        reader = self.easyocr_model['model']
+        reader = self.easyocr_model
         result = reader.readtext(
             numpy.array(image),
             paragraph=True,

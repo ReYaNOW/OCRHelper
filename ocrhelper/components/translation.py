@@ -1,4 +1,3 @@
-import os
 import tkinter as tk
 from time import sleep
 
@@ -6,7 +5,7 @@ from loguru import logger
 import g4f
 import keyboard
 from PIL import ImageTk
-from deep_translator import GoogleTranslator, ChatGptTranslator
+from deep_translator import GoogleTranslator
 
 from components.debug_window import DebugWindow
 
@@ -43,7 +42,7 @@ class TranslatedWindow:
         x1, y1 = self.coordinates
         self.new_window.geometry(f'+{int(x1)}+{int(y1)}')
 
-        # pack frame with image
+        # pack lg_frames with image
         image_frame = self.frame_with_borders(self.new_window)
 
         tkinter_image = ImageTk.PhotoImage(image)
@@ -88,7 +87,7 @@ class TranslatedWindow:
 
     @staticmethod
     def frame_with_borders(new_window: tk.Toplevel):
-        """Create a new frame with borders inside the given window"""
+        """Create a new lg_frames with borders inside the given window"""
         image_frame = tk.Frame(
             new_window,
             highlightbackground='grey',
@@ -137,7 +136,7 @@ class TranslatedWindow:
 def translation(text, from_lang, to_lang, translator='Google Translator'):
     logger.info(f'Перевод при помощи {translator}')
     match translator:
-        case 'Google Translator':
+        case 'Google':
             if from_lang not in ('ru', 'en'):
                 from_lang_checked = 'auto'
             else:
@@ -149,20 +148,12 @@ def translation(text, from_lang, to_lang, translator='Google Translator'):
             )
             return translator_obj.translate(text=text)
 
-        case 'ChatGPT':
-            translator_obj = ChatGptTranslator(
-                api_key=os.environ['GPT_API_KEY'],
-                target=gpt_lang_convert(to_lang),
-            )
-
-            return translator_obj.translate(text=text)
-
-        case 'Faster ChatGPT':
+        case 'GPT':
             from_lang_conv = gpt_lang_convert(from_lang)
             to_lang_conv = gpt_lang_convert(to_lang)
             return better_gpt(text, from_lang_conv, to_lang_conv)
 
-        case 'Faster ChatGPT streaming':
+        case 'GPT Stream':
             from_lang_conv = gpt_lang_convert(from_lang)
             to_lang_conv = gpt_lang_convert(to_lang)
             return better_gpt(

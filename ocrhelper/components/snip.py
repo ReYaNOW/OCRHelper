@@ -1,6 +1,6 @@
 import tkinter as tk
 
-from loguru import logger
+# from loguru import logger
 import keyboard
 from PIL import ImageTk, ImageGrab
 
@@ -94,12 +94,11 @@ class SnippingTool:
             )
             is False
         ):
-            logger.warning('Была выбрана слишком маленькая область, \
-распознавание отменено')
+#             logger.warning('Была выбрана слишком маленькая область, \ # noqa
+# распознавание отменено') # noqa
             return self.destroy_screenshot_mode()
 
         if self.start_x <= self.current_x and self.start_y <= self.current_y:
-            print('right down')
             self.exit_screenshot_mode()
             self.take_bounded_screenshot(
                 self.start_x,
@@ -109,7 +108,6 @@ class SnippingTool:
             )
 
         elif self.start_x >= self.current_x and self.start_y <= self.current_y:
-            print('left down')
             self.exit_screenshot_mode()
             self.take_bounded_screenshot(
                 self.current_x,
@@ -119,7 +117,6 @@ class SnippingTool:
             )
 
         elif self.start_x <= self.current_x and self.start_y >= self.current_y:
-            print('right up')
             self.exit_screenshot_mode()
             self.take_bounded_screenshot(
                 self.start_x,
@@ -129,7 +126,6 @@ class SnippingTool:
             )
 
         elif self.start_x >= self.current_x and self.start_y >= self.current_y:
-            print('left up')
             self.exit_screenshot_mode()
             self.take_bounded_screenshot(
                 self.current_x,
@@ -150,10 +146,11 @@ class SnippingTool:
         )
 
     def display_rectangle_position(self):
-        logger.debug(
-            f'координаты: {self.start_x} {self.start_y} {self.current_x} \
-{self.current_y}'
-        )
+        pass
+#         logger.debug(
+#             f'координаты: {self.start_x} {self.start_y} {self.current_x} \
+# {self.current_y}'
+#         )
 
     def exit_screenshot_mode(self, _=None):
         if not self.canvas_on_screen:
@@ -197,7 +194,6 @@ class SnippingTool:
                 pillow_y2 + correction,
             ),
         )
-        logger.debug(f'размер изображения: {image.size}')
-        image.save('test_image.png')
+        # logger.debug(f'размер изображения: {image.size}')
 
         self.snip_trigger(image, (x1, y1))
