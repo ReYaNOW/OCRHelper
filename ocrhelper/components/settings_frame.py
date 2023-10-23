@@ -68,7 +68,7 @@ class LanguagesFrame(ctk.CTkFrame):
         jap_option.place(relx=0.80, rely=0.685, anchor='center')
 
     def create_lang_option(self, language: str):
-        lang_var = ctk.StringVar(self, 'ENG')
+        lang_var = ctk.StringVar(self, language)
         lang_option = ctk.CTkCheckBox(
             self,
             command=self.validate_lang_var,
@@ -80,16 +80,18 @@ class LanguagesFrame(ctk.CTkFrame):
             onvalue=language,
             offvalue='',
         )
+        if lang_var.get() != 'ENG':
+            lang_var.set('')
         return lang_var, lang_option
 
     def validate_lang_var(self):
-        if self.get_selected_languages():
-            self.eng_var.set('eng')
+        if not self.get_selected_languages():
+            self.eng_var.set('ENG')
 
     def get_selected_languages(self):
         languages = self.eng_var.get(), self.rus_var.get(), self.jap_var.get()
         # change to 2 char version to work with EasyOCR
-        return [lang[:-1].lower() for lang in languages]
+        return [lang[:-1].lower() for lang in languages if lang != '']
 
 
 class TranslatorsFrame(ctk.CTkFrame):

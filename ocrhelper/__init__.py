@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import ttk
 
 import customtkinter as ctk
 from tkextrafont import Font
@@ -27,18 +26,15 @@ class App(ctk.CTk):
 
     def __init__(self):
         self.easyocr_model = None
+        self.languages = None
         self.faster_gpt_stream = False
 
         super().__init__(fg_color="#262834")
         self.title('OCR Helper')
         self.geometry("670x300")
         self.iconbitmap(r'assets\icon.ico')
-        
-        self.withdraw()
 
-        # Styles
-        # self.call("source", r"theme\sv.tcl")
-        # self.call("set_theme", "sv-dark")
+        self.withdraw()
 
         # tray
         image = Image.open(r'assets\icon.ico')
@@ -58,7 +54,7 @@ class App(ctk.CTk):
         self.snipping_tool = SnippingTool(
             self, self.update, self.snip_trigger, self.debug_window
         )
-        
+
         keyboard.add_hotkey(
             'ctrl + shift + x',
             callback=self.snipping_tool.display_snipping_tool,
@@ -129,12 +125,11 @@ class App(ctk.CTk):
         self.mainloop()
 
     def easyocr_first_time_load(self):
-        
-        self.load_easyocr_model()
+        self.load_easyocr_model(first_time_load=True)
         img = Image.open('load_easyocr.png')
-        # self.easy_ocr['model'].readtext(numpy.array(img))
         self.easyocr_model.readtext(numpy.array(img))
-        
+        self.languages = 'en'
+
         self.update()
         self.deiconify()
 
@@ -199,12 +194,7 @@ class App(ctk.CTk):
         image_tk = ImageTk.PhotoImage(image, size=(96, 96))
         return image_tk
 
-
-    def load_easyocr_model(self, first_time_load = False):
-        # self.easy_ocr['lang'] = self.easyocr_langs
-        # logger.info(
-        #     f'Загрузка модели EasyOCR c {", ".join(self.easyocr_langs)}'
-        # )
+    def load_easyocr_model(self, first_time_load=False):
         if first_time_load:
             languages = ['en']
         else:
@@ -244,11 +234,14 @@ class App(ctk.CTk):
 
         # get languages from tkinter variables
         # languages = self.check_lang_var()
-        languages = self.get_selected_languages()
+        new_languages = self.get_selected_languages()
+        if self.languages != new_languages:
+            self.languages = new_languages
+            self.load_easyocr_model()
 
         # get recognized text from image via PyTesseract and EasyOCR
         recognition_result = TextRecognition(
-            image, languages, self.easyocr_model, self.debug_window
+            image, self.languages, self.easyocr_model, self.debug_window
         )
         text = recognition_result.get_text()
 
@@ -263,7 +256,7 @@ class App(ctk.CTk):
         # get translated text
         translated_text = translation(
             text=text,
-            from_lang=languages,
+            from_lang=self.languages,
             to_lang='russian',
             translator=translator,
         )
