@@ -1,18 +1,19 @@
 import tkinter as tk
 
-# from loguru import logger
+from loguru import logger
 import keyboard
 from PIL import ImageTk, ImageGrab
 
-from components.debug_window import DebugWindow
+from gui_parts.debug_window import DebugWindow
 
 
 class SnippingTool:
-    def __init__(self, master, app_update, snip_trigger, debug_window):
+    def __init__(self, master, additional_methods):
         self.master = master
-        self.app_update = app_update
-        self.snip_trigger = snip_trigger
-        self.debug_window: DebugWindow = debug_window
+        self.app_update = additional_methods['gui_update']
+        self.snip_trigger = additional_methods['snip_trigger']
+        self.debug_window: DebugWindow = additional_methods['debug_window']
+        self.get_rect_color = additional_methods['get_rect_color']
         self.master_screen = None
         self.snip_surface = None
         self.canvas_on_screen = False
@@ -72,14 +73,18 @@ class SnippingTool:
     def display_debug_window(self):
         self.debug_window.tkinter_deiconify()
         self.debug_window.add_message('Ожидание скриншота', 'white')
-        self.app_update()
+    
+    def change_debug_win_instance(self, instance):
+        self.debug_window = instance
 
     def on_button_press(self, event):
         # save mouse drag start position
         self.start_x = self.snip_surface.canvasx(event.x)
         self.start_y = self.snip_surface.canvasy(event.y)
+        
+        rect_color = self.get_rect_color()
         self.rect = self.snip_surface.create_rectangle(
-            0, 0, 1, 1, outline='red', width=2
+            0, 0, 1, 1, outline=rect_color, width=2
         )
 
     def on_button_release(self, _):
@@ -94,8 +99,10 @@ class SnippingTool:
             )
             is False
         ):
-#             logger.warning('Была выбрана слишком маленькая область, \ # noqa
-# распознавание отменено') # noqa
+            logger.warning(
+                'Была выбрана слишком маленькая область, '
+                'распознавание отменено'
+            )
             return self.destroy_screenshot_mode()
 
         if self.start_x <= self.current_x and self.start_y <= self.current_y:
@@ -146,11 +153,10 @@ class SnippingTool:
         )
 
     def display_rectangle_position(self):
-        pass
-#         logger.debug(
-#             f'координаты: {self.start_x} {self.start_y} {self.current_x} \
-# {self.current_y}'
-#         )
+        logger.debug(
+            f'координаты: {self.start_x} {self.start_y} {self.current_x}'
+            f'{self.current_y}'
+        )
 
     def exit_screenshot_mode(self, _=None):
         if not self.canvas_on_screen:

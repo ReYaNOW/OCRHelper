@@ -1,7 +1,7 @@
 import numpy
 from loguru import logger
 
-from components.debug_window import DebugWindow
+from gui_parts.debug_window import DebugWindow
 
 
 class TextRecognition:
@@ -47,7 +47,6 @@ class TextRecognition:
                     f'{self.current_ocr} не справился\n', "orange"
                 )
                 self.debug_window.add_message(nextocr, 'white')
-                self.debug_window.tkinter_update()
             case 'positive':
                 logger.info(f'Справился, conf={conf}')
                 logger.info(f'Результат = \'{text}\'')
@@ -60,7 +59,6 @@ class TextRecognition:
                 self.debug_window.add_message(
                     'Текст успешно распознан\n', 'green', enter=enter
                 )
-                self.debug_window.tkinter_update()
 
     def get_text(self):
         return self.text

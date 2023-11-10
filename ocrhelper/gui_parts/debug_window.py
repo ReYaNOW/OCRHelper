@@ -6,7 +6,11 @@ from PIL import ImageTk
 
 class DebugWindow:
     def __init__(self, master):
+        self.master = master
         self.window = tk.Toplevel(master)
+        # self.window.geometry('1x1+0+0')
+        self.window.withdraw()
+        self.window.update()
         self.window.geometry('+0+0')
         self.window.overrideredirect(True)
         self.window.attributes('-topmost', True)
@@ -35,22 +39,35 @@ class DebugWindow:
         self.text_area.tag_config('white', foreground='#F8F8F2')
         self.text_area.tag_config('orange', foreground='#F89580')
         self.text_area.tag_config('green', foreground='#4FF96D')
-
         self.text_area.pack()
-        self.window.withdraw()
 
     def add_message(self, text, color, enter="\n"):
         self.text_area.insert('end', f'{text}{enter}', color)
         self.text_area.see('end')
+        self.master.update()
 
     def clear_text_area(self):
         self.text_area.delete('1.0', 'end')
-
-    def tkinter_update(self):
-        self.window.update()
 
     def tkinter_withdraw(self):
         self.window.withdraw()
 
     def tkinter_deiconify(self):
         self.window.deiconify()
+
+
+class DebugWindowNullObject:
+    def __init__(self, master):
+        self.master = master
+
+    def add_message(self, text, color, enter="\n"):
+        pass
+
+    def clear_text_area(self):
+        pass
+
+    def tkinter_withdraw(self):
+        pass
+
+    def tkinter_deiconify(self):
+        pass

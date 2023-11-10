@@ -1,19 +1,23 @@
+import os
 import tkinter as tk
 from time import sleep
 
-from loguru import logger
-import g4f
 import keyboard
+import openai
 from PIL import ImageTk
 from deep_translator import GoogleTranslator
+from loguru import logger
 
-from components.debug_window import DebugWindow
+from gui_parts.debug_window import DebugWindow
+
+api_key = os.getenv('GPT_API_KEY')
+openai.api_key = api_key
 
 
-class TranslatedWindow:
+class TranslationWindow:
     """Create a tkinter window for displaying translated text"""
 
-    def __init__(self, app, image, text_related, debug_window, use_gpt_stream):
+    def __init__(self, gui, image, text_related, debug_window, use_gpt_stream):
         self.image = image
         self.original_text = text_related['text']
         self.translated_text = text_related['translated_text']
@@ -22,7 +26,7 @@ class TranslatedWindow:
         self.debug_window: DebugWindow = debug_window
 
         # create new window to display recognized and translated text
-        self.new_window = tk.Toplevel(app)
+        self.new_window = tk.Toplevel(gui)
         self.new_window.overrideredirect(True)
         self.new_window.attributes('-topmost', True)
 
@@ -81,7 +85,6 @@ class TranslatedWindow:
 
         translated_text_label.pack(expand=True, fill='x')
 
-        # start loop if translated text is not a str, but generator
         if self.use_gpt_stream:
             self.stream_loop()
 
@@ -116,13 +119,14 @@ class TranslatedWindow:
         self.debug_window.clear_text_area()
         self.debug_window.tkinter_withdraw()
         self.new_window.destroy()
-
+    
     def stream_loop(self):
         """Display translated text in real-time if GPT stream is used"""
         word = ''
-        for elem in self.translated_text:
+        for chunk in self.translated_text:
             sleep(0.07)
-            for char in elem:
+            delta: dict = chunk['choices'][0]['delta']
+            for char in delta.get('content', ''):
                 if char.isalpha():
                     word += char
                 else:
@@ -137,10 +141,10 @@ def translation(text, from_lang, to_lang, translator='Google Translator'):
     logger.info(f'Перевод при помощи {translator}')
     match translator:
         case 'Google':
-            if from_lang not in ('ru', 'en'):
+            if len(from_lang) == 1 or from_lang not in ('ru', 'en'):
                 from_lang_checked = 'auto'
             else:
-                from_lang_checked = from_lang
+                from_lang_checked = from_lang[0]
 
             translator_obj = GoogleTranslator(
                 source=from_lang_checked,
@@ -149,33 +153,34 @@ def translation(text, from_lang, to_lang, translator='Google Translator'):
             return translator_obj.translate(text=text)
 
         case 'GPT':
-            from_lang_conv = gpt_lang_convert(from_lang)
-            to_lang_conv = gpt_lang_convert(to_lang)
-            return better_gpt(text, from_lang_conv, to_lang_conv)
+            from_lang_conv = lang_convert(from_lang)
+            to_lang_conv = lang_convert(to_lang)
+            return gpt_request(text, from_lang_conv, to_lang_conv)
 
         case 'GPT Stream':
-            from_lang_conv = gpt_lang_convert(from_lang)
-            to_lang_conv = gpt_lang_convert(to_lang)
-            return better_gpt(
+            from_lang_conv = lang_convert(from_lang)
+            to_lang_conv = lang_convert(to_lang)
+            return gpt_request(
                 text, from_lang_conv, to_lang_conv, use_stream=True
             )
 
 
-def better_gpt(text, from_lang, to_lang, use_stream=False):
+def gpt_request(text, from_lang, to_lang, use_stream=False):
     request = f'Please translate the user message from {from_lang} to\
      {to_lang}. Make the translation sound as natural as possible.\
       In answer write only translation.\n\n {text}'
 
-    response = g4f.ChatCompletion.create(
-        model='gpt-3.5-turbo',
-        provider=g4f.Provider.GetGpt,
+    response = openai.ChatCompletion.create(
+        model='gpt-3.5-turbo-1106',
         messages=[{'role': 'user', 'content': request}],
         stream=use_stream,
     )
-    return response
+    if use_stream:
+        return response
+    return response['choices'][0]['message']['content']
 
 
-def gpt_lang_convert(language):
+def lang_convert(language):
     match language:
         case 'eng':
             return 'english'
