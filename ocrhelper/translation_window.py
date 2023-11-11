@@ -16,6 +16,7 @@ class TranslationWindow:
     """Create a tkinter window for displaying translated text"""
 
     def __init__(self, gui, debug_window, image, text_related):
+        self.gui = gui
         self.debug_window: DebugWindow = debug_window
         self.image = image
         self.original_text = text_related['text']
@@ -23,7 +24,22 @@ class TranslationWindow:
         self.coordinates = text_related['coordinates']
         self.use_gpt_stream = text_related['use_gpt_stream']
 
-        self.transl_window = tk.Toplevel(gui)
+        self._create_transl_window()
+
+        # change window position to the place where user took a screenshot
+        x1, y1 = self.coordinates
+        self.transl_window.geometry(f'+{int(x1)}+{int(y1)}')
+
+        self._pack_screenshot()
+
+        # get width for both labels, so they adapt to the width of image
+        self.width = image.size[0]
+
+        self._pack_recognized_text()
+        self._pack_translated_text()
+
+    def _create_transl_window(self):
+        self.transl_window = tk.Toplevel(self.gui)
         self.transl_window.overrideredirect(True)
         self.transl_window.attributes('-topmost', True)
 
@@ -40,18 +56,6 @@ class TranslationWindow:
         self.transl_window.after(1, lambda: self.transl_window.focus_force())
 
         keyboard.add_hotkey('escape', callback=self.close_transl_window)
-
-        # change window position to the place where user took a screenshot
-        x1, y1 = self.coordinates
-        self.transl_window.geometry(f'+{int(x1)}+{int(y1)}')
-
-        self._pack_screenshot()
-
-        # get width for both labels, so they adapt to the width of image
-        self.width = image.size[0]
-
-        self._pack_recognized_text()
-        self._pack_translated_text()
 
     def _pack_screenshot(self):
         image_frame = self.frame_with_borders(self.transl_window)

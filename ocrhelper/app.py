@@ -9,7 +9,7 @@ from tkextrafont import Font
 
 from ocr import TextRecognition
 from ocrhelper.gui import Gui
-from ocrhelper.gui_parts.translation_window import TranslationWindow
+from translation_window import TranslationWindow
 from ocrhelper.components.translation import translation
 
 
