@@ -32,7 +32,7 @@ class Gui(ctk.CTk):
         super().__init__(fg_color="#262834")
         self.title('OCR Helper')
         self.geometry("670x300")
-        self.iconbitmap(r'assets\icon.ico')
+        self.iconbitmap(r'../assets/icon.ico')
         self.withdraw()
 
         screen_width = self.winfo_screenwidth()
@@ -100,7 +100,7 @@ class Gui(ctk.CTk):
         self.snipping_tool.display_snipping_tool()
 
     def _create_system_tray_icon(self):
-        image = Image.open(r'assets\icon.ico')
+        image = Image.open(r'../assets\icon.ico')
         menu = (
             item('Open menu', self.show_window, default=True),
             item('Exit', self.quit_window),
@@ -111,8 +111,8 @@ class Gui(ctk.CTk):
         self.protocol('WM_DELETE_WINDOW', lambda: self.withdraw())
 
     def _place_settings_button(self):
-        self.settings_im = self.open_tk_img('assets/settings.png')
-        self.settings_im_dark = self.open_tk_img('assets/settings dark.png')
+        self.settings_im = self.open_tk_img('../assets/settings.png')
+        self.settings_im_dark = self.open_tk_img('../assets/settings dark.png')
 
         self.settings_button = tk.Button(
             image=self.settings_im,
@@ -204,7 +204,7 @@ class Gui(ctk.CTk):
         self.config['rect_color'] = self.get_rect_color()
         self.config.update(self.get_option_window_values())
 
-        with open('config.json', 'w') as config:
+        with open('../additional files/config.json', 'w') as config:
             config.write(json.dumps(self.config))
 
         self.debug_window.window.destroy()

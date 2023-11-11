@@ -32,7 +32,7 @@ class SettingsFrame(ctk.CTkFrame):
         self.additional_settings = ctk.CTkFrame(self)
 
     def _place_lang_frame(self):
-        languages_frame = LanguagesFrame(self, self.load_ocr)
+        languages_frame = LanguagesFrame(self, self.config, self.load_ocr)
         languages_frame.place(relx=0.2375, rely=0.24, anchor='center')
         self.get_selected_languages = languages_frame.get_selected_languages
 

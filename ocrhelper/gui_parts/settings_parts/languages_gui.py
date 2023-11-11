@@ -5,7 +5,8 @@ from ocrhelper.components.utils import create_stylish_button
 
 
 class LanguagesFrame(ctk.CTkFrame):
-    def __init__(self, settings_frame, load_ocr: Callable):
+    def __init__(self, settings_frame, config, load_ocr: Callable):
+        self.config = config
         self.load_ocr = load_ocr
         self.button_pressed = None
 
@@ -44,6 +45,8 @@ class LanguagesFrame(ctk.CTkFrame):
             height=30,
         )
         change_button.place(relx=0.5, rely=0.808, anchor='center')
+        
+        self.load_langs_from_config()
 
     def press_load_ocr_btn(self):
         if self.button_pressed:
@@ -75,5 +78,15 @@ class LanguagesFrame(ctk.CTkFrame):
 
     def get_selected_languages(self):
         languages = self.eng_var.get(), self.rus_var.get(), self.jap_var.get()
-        # change to 2 char version to work with EasyOCR
+        # change to 2 char versions to work with EasyOCR
         return [lang[:-1].lower() for lang in languages if lang != '']
+
+    def load_langs_from_config(self):
+        for lang in self.config['recognition_languages']:
+            match lang:
+                case 'en':
+                    self.eng_var.set('ENG')
+                case 'ru':
+                    self.rus_var.set('RUS')
+                case 'ja':
+                    self.jap_var.set('JAP')

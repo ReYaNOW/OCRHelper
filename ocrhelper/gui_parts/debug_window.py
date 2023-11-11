@@ -19,7 +19,7 @@ class DebugWindow:
         frame.pack()
 
         # add label status
-        img = ImageTk.PhotoImage(im.open(r'assets\debug_label.png'))
+        img = ImageTk.PhotoImage(im.open(r'../assets/debug_label.png'))
         label = tk.Label(frame, image=img, background='white')
         label.image = img
         label.pack(expand=True, fill='x')

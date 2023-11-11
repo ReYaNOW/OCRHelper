@@ -22,7 +22,7 @@ class App:
         self.languages = None
         self.use_gpt_stream = False
 
-        with open('config.json') as config_file:
+        with open('../additional files/config.json') as config_file:
             self.config = json.load(config_file)
 
         self.gui = Gui(
@@ -47,7 +47,7 @@ class App:
         self.languages = self.config['recognition_languages']
         self.load_easyocr_model()
 
-        img = Image.open('load_easyocr.png')
+        img = Image.open('../additional files/load_easyocr.png')
         self.easyocr_model.readtext(numpy.array(img))
 
         self.gui.load_ocr_toast.hide_toast_immediately()

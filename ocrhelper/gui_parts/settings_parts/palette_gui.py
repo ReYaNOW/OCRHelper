@@ -79,7 +79,7 @@ class PaletteFrame(ctk.CTkFrame):
         )
         self.example_canvas.place(relx=0.5, rely=0.84, anchor='center')
 
-        example_img = Image.open('assets/example_image.png')
+        example_img = Image.open('../assets/example_image.png')
         example_img_ctk = ImageTk.PhotoImage(example_img)
         self.example_canvas.image = example_img_ctk
         self.example_canvas.create_image(
@@ -94,9 +94,9 @@ class PaletteFrame(ctk.CTkFrame):
         self.blue_slider.configure(command=self.change_rect_color)
 
     def _place_return_button(self):
-        self.return_im = self.open_tk_img(r'assets/return default.png')
+        self.return_im = self.open_tk_img(r'../assets/return default.png')
         self.return_im_dark = self.open_tk_img(
-            r'assets/return default dark.png'
+            r'../assets/return default dark.png'
         )
 
         self.return_button = self.create_button_with_preset(
@@ -107,8 +107,10 @@ class PaletteFrame(ctk.CTkFrame):
         self.bind_button('<Leave>', self.return_button, self.return_im)
 
     def _place_change_button(self):
-        self.change_im = self.open_tk_img(r'assets/change color.png')
-        self.change_im_dark = self.open_tk_img(r'assets/change color dark.png')
+        self.change_im = self.open_tk_img(r'../assets/change color.png')
+        self.change_im_dark = self.open_tk_img(
+            r'../assets/change color dark.png'
+        )
 
         self.change_button = self.create_button_with_preset(
             self.change_im, command=self.change_color_from_entry
