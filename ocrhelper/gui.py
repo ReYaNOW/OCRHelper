@@ -35,14 +35,7 @@ class Gui(ctk.CTk):
         self.iconbitmap(r'../assets/icon.ico')
         self.withdraw()
 
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-
-        x_coordinate = int((screen_width / 2) - (670 / 2))
-        y_coordinate = int((screen_height / 2) - (300 / 2))
-
-        self.geometry(f'+{x_coordinate}+{y_coordinate}')
-
+        self._change_geometry_to_center()
         self._create_system_tray_icon()
         self._place_mode_buttons()
         self._place_settings_button()
@@ -98,6 +91,15 @@ class Gui(ctk.CTk):
         current_debug_win = self.get_current_debug_win()
         self.snipping_tool.change_debug_win_instance(current_debug_win)
         self.snipping_tool.display_snipping_tool()
+    
+    def _change_geometry_to_center(self):
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        
+        x_coordinate = int((screen_width / 2) - (670 / 2))
+        y_coordinate = int((screen_height / 2) - (300 / 2))
+        
+        self.geometry(f'+{x_coordinate}+{y_coordinate}')
 
     def _create_system_tray_icon(self):
         image = Image.open(r'../assets\icon.ico')

@@ -38,6 +38,9 @@ class TranslationWindow:
         self._pack_recognized_text()
         self._pack_translated_text()
 
+        if self.use_gpt_stream:
+            self.stream_loop()
+
     def _create_transl_window(self):
         self.transl_window = tk.Toplevel(self.gui)
         self.transl_window.overrideredirect(True)
@@ -92,9 +95,6 @@ class TranslationWindow:
 
         translated_text_label.pack(expand=True, fill='x')
 
-        if self.use_gpt_stream:
-            self.stream_loop()
-
     def custom_label(self, frame, text: str | tk.StringVar, is_variable=False):
         """Create a custom label with specified parameters"""
         arguments = {
@@ -123,14 +123,18 @@ class TranslationWindow:
             sleep(0.07)
             delta: dict = chunk['choices'][0]['delta']
             for char in delta.get('content', ''):
-                if char.isalpha():
-                    word += char
-                else:
-                    current_text = self.translation_var.get()
-                    self.translation_var.set(current_text + word + char)
+                word = self.extend_stream_string(char, word)
 
-                    self.transl_window.update()
-                    word = ''
+    def extend_stream_string(self, char, word):
+        if char.isalpha():
+            word += char
+        else:
+            current_text = self.translation_var.get()
+            self.translation_var.set(current_text + word + char)
+
+            self.transl_window.update()
+            word = ''
+        return word
 
     @staticmethod
     def frame_with_borders(new_window: tk.Toplevel):
