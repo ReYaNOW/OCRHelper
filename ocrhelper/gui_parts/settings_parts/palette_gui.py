@@ -7,6 +7,8 @@ import customtkinter as ctk
 
 class PaletteFrame(ctk.CTkFrame):
     def __init__(self, settings, rect_color):
+        self.rect_color = rect_color
+
         super().__init__(
             settings,
             bg_color='#262834',
@@ -15,25 +17,41 @@ class PaletteFrame(ctk.CTkFrame):
             height=230,
         )
 
-        self.rect_color = rect_color
         self.rect_color_default = '#b800cf'
         self.rect_color_def_rgb = (184, 0, 207)
-        self.rect_color_config = rect_color
         self.rect_color_rgb = ImageColor.getcolor(rect_color, "RGB")
 
-        self.example_canvas = ctk.CTkCanvas(
-            self, width=315, height=55, highlightthickness=0
-        )
-        self.example_canvas.place(relx=0.5, rely=0.84, anchor='center')
+        self.red_var, self.red_slider = self._place_red_widgets()
+        self.green_var, self.green_slider = self._place_green_widgets()
+        self.blue_var, self.blue_slider = self._place_blue_widgets()
 
+        self._place_example_image()
+        self._place_hex_label_and_entry()
+        self._place_return_button()
+        self._place_change_button()
+
+    def _place_hex_label_and_entry(self):
+        hex_label = ctk.CTkLabel(self, text='HEX :', font=("Rubik bold", 15))
+        hex_label.place(relx=0.285, rely=0.15, anchor='center')
+
+        self.hex_var = ctk.StringVar(self, self.rect_color)
+        self.hex_entry = ctk.CTkEntry(self, textvariable=self.hex_var)
+        self.hex_entry.place(relx=0.365, rely=0.09)
+        self.hex_entry.bind("<Leave>", lambda event: self.focus())
+
+    def _place_red_widgets(self):
+        hex_color = self.rect_color_rgb[0]
         red_widgets = self.create_color_labels_and_slider(
-            'Red', 'red', self.rect_color_rgb[0]
+            'Red', 'red', hex_color
         )
         red_label, red_label_value, red_var, red_slider = red_widgets
         red_label.place(relx=0.1, rely=0.35, anchor='center')
         red_label_value.place(relx=0.225, rely=0.35, anchor='center')
         red_slider.place(relx=0.58, rely=0.35, anchor='center')
 
+        return red_var, red_slider
+
+    def _place_green_widgets(self):
         green_widgets = self.create_color_labels_and_slider(
             'Green', '#00E81A', self.rect_color_rgb[1]
         )
@@ -42,6 +60,9 @@ class PaletteFrame(ctk.CTkFrame):
         green_label_value.place(relx=0.225, rely=0.5, anchor='center')
         green_slider.place(relx=0.58, rely=0.5, anchor='center')
 
+        return green_var, green_slider
+
+    def _place_blue_widgets(self):
         blue_widgets = self.create_color_labels_and_slider(
             'Blue', '#0376FF', self.rect_color_rgb[2]
         )
@@ -50,6 +71,14 @@ class PaletteFrame(ctk.CTkFrame):
         blue_label_value.place(relx=0.225, rely=0.65, anchor='center')
         blue_slider.place(relx=0.58, rely=0.65, anchor='center')
 
+        return blue_var, blue_slider
+
+    def _place_example_image(self):
+        self.example_canvas = ctk.CTkCanvas(
+            self, width=315, height=55, highlightthickness=0
+        )
+        self.example_canvas.place(relx=0.5, rely=0.84, anchor='center')
+
         example_img = Image.open('assets/example_image.png')
         example_img_ctk = ImageTk.PhotoImage(example_img)
         self.example_canvas.image = example_img_ctk
@@ -57,24 +86,14 @@ class PaletteFrame(ctk.CTkFrame):
             -7, 0, anchor='nw', image=example_img_ctk
         )
         self.rect = self.example_canvas.create_rectangle(
-            3, 10, 312, 50, outline=self.rect_color_config, width=2
+            3, 10, 312, 50, outline=self.rect_color, width=2
         )
 
-        self.red_var = red_var
-        self.green_var = green_var
-        self.blue_var = blue_var
-        red_slider.configure(command=self.change_rect_color)
-        green_slider.configure(command=self.change_rect_color)
-        blue_slider.configure(command=self.change_rect_color)
+        self.red_slider.configure(command=self.change_rect_color)
+        self.green_slider.configure(command=self.change_rect_color)
+        self.blue_slider.configure(command=self.change_rect_color)
 
-        hex_label = ctk.CTkLabel(self, text='HEX :', font=("Rubik bold", 15))
-        hex_label.place(relx=0.285, rely=0.15, anchor='center')
-
-        self.hex_var = ctk.StringVar(self, self.rect_color_config)
-        self.hex_entry = ctk.CTkEntry(self, textvariable=self.hex_var)
-        self.hex_entry.place(relx=0.365, rely=0.09)
-        self.hex_entry.bind("<Leave>", lambda event: self.focus())
-
+    def _place_return_button(self):
         self.return_im = self.open_tk_img(r'assets/return default.png')
         self.return_im_dark = self.open_tk_img(
             r'assets/return default dark.png'
@@ -84,18 +103,18 @@ class PaletteFrame(ctk.CTkFrame):
             self.return_im, self.return_rect_color_to_default
         )
         self.return_button.place(relx=0.04, rely=0.05)
-
         self.bind_button('<Enter>', self.return_button, self.return_im_dark)
         self.bind_button('<Leave>', self.return_button, self.return_im)
-
+        
+    def _place_change_button(self):
         self.change_im = self.open_tk_img(r'assets/change color.png')
         self.change_im_dark = self.open_tk_img(r'assets/change color dark.png')
-
+        
         self.change_button = self.create_button_with_preset(
             self.change_im, command=self.change_color_from_entry
         )
         self.change_button.place(relx=0.825, rely=0.05)
-
+        
         self.bind_button('<Enter>', self.change_button, self.change_im_dark)
         self.bind_button('<Leave>', self.change_button, self.change_im)
 
