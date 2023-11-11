@@ -60,6 +60,8 @@ class App:
         logger.success('Модель EasyOCR была успешно загружена')
 
     def load_easyocr_with_toast(self):
+        """Load EasyOCR with some languages
+         if they are changed from previous load"""
         new_languages = self.gui.get_selected_languages()
         if self.languages != new_languages:
             self.languages = new_languages
@@ -75,27 +77,15 @@ class App:
 
         Args:
             image: The captured screenshot image.
-
             coordinates: The coordinates of the captured screenshot.
         """
         self.gui.debug_window.add_message('Скриншот был получен', 'green')
+        self.load_easyocr_with_toast()
 
-        new_languages = self.gui.get_selected_languages()
-        if self.languages != new_languages:
-            self.languages = new_languages
-
-            self.gui.load_ocr_toast.show_toast()
-            self.gui.update()
-            self.load_easyocr_model()
-            self.gui.loaded_ocr_toast.show_toast()
-
-        # get recognized text from image via EasyOCR
-        recognition_result = TextRecognition(
+        text = TextRecognition(
             image, self.languages, self.easyocr_model, self.gui.debug_window
-        )
-        text = recognition_result.get_text()
+        ).get_text()
 
-        # get chosen translator from variable and put it on debug window
         translator = self.gui.get_selected_translator()
         self.gui.debug_window.add_message(
             f'Перевод при помощи —\n{translator}\n',
@@ -109,7 +99,6 @@ class App:
             to_lang='russian',
             translator=translator,
         )
-
         logger.success('Текст успешно переведен')
         logger.info(f'Переведенный текст = {translated_text}')
 
@@ -117,21 +106,22 @@ class App:
             self.use_gpt_stream = True
 
         # add recognized text to clipboard if checkbutton is selected
-        if self.gui.get_option_win_values()['need_copy_to_clipboard']:
+        if self.gui.get_option_window_values()['need_copy_to_clipboard']:
             pyperclip.copy(text)
 
         # put translated text on the screen in a new tkinter window
         x1, y1 = coordinates
+        text_related = {
+            'text': text,
+            'translated_text': translated_text,
+            'coordinates': (x1, y1),
+            'use_gpt_stream': self.use_gpt_stream,
+        }
         TranslationWindow(
             self.gui,
             self.gui.debug_window,
             image,
-            {
-                'text': text,
-                'translated_text': translated_text,
-                'coordinates': (x1, y1),
-                'use_gpt_stream': self.use_gpt_stream,
-            },
+            text_related,
         )
         self.gui.debug_window.add_message('Перевод прошел успешно!', 'green')
         self.use_gpt_stream = False

@@ -105,16 +105,16 @@ class PaletteFrame(ctk.CTkFrame):
         self.return_button.place(relx=0.04, rely=0.05)
         self.bind_button('<Enter>', self.return_button, self.return_im_dark)
         self.bind_button('<Leave>', self.return_button, self.return_im)
-        
+
     def _place_change_button(self):
         self.change_im = self.open_tk_img(r'assets/change color.png')
         self.change_im_dark = self.open_tk_img(r'assets/change color dark.png')
-        
+
         self.change_button = self.create_button_with_preset(
             self.change_im, command=self.change_color_from_entry
         )
         self.change_button.place(relx=0.825, rely=0.05)
-        
+
         self.bind_button('<Enter>', self.change_button, self.change_im_dark)
         self.bind_button('<Leave>', self.change_button, self.change_im)
 

@@ -153,11 +153,11 @@ class Gui(ctk.CTk):
         self.snipping_tool.change_debug_win_instance(current_debug_win)
         self.snipping_tool.display_snipping_tool()
 
-    def get_option_win_values(self) -> dict:
+    def get_option_window_values(self) -> dict:
         return self.settings_frame.options_window.get_var_values()
 
     def get_current_debug_win(self):
-        option_val = self.get_option_win_values()
+        option_val = self.get_option_window_values()
         if option_val['use_debug_window'] is True:
             return self.debug_window
         else:
@@ -193,7 +193,7 @@ class Gui(ctk.CTk):
         self.config['recognition_languages'] = self.get_selected_languages()
         self.config['translator'] = self.get_selected_translator()
         self.config['rect_color'] = self.get_rect_color()
-        self.config.update(self.get_option_win_values())
+        self.config.update(self.get_option_window_values())
 
         with open('config.json', 'w') as config:
             config.write(json.dumps(self.config))

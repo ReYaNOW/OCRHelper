@@ -73,7 +73,7 @@ class SnippingTool:
     def display_debug_window(self):
         self.debug_window.tkinter_deiconify()
         self.debug_window.add_message('Ожидание скриншота', 'white')
-    
+
     def change_debug_win_instance(self, instance):
         self.debug_window = instance
 
@@ -81,7 +81,7 @@ class SnippingTool:
         # save mouse drag start position
         self.start_x = self.snip_surface.canvasx(event.x)
         self.start_y = self.snip_surface.canvasy(event.y)
-        
+
         rect_color = self.get_rect_color()
         self.rect = self.snip_surface.create_rectangle(
             0, 0, 1, 1, outline=rect_color, width=2
@@ -90,56 +90,21 @@ class SnippingTool:
     def on_button_release(self, _):
         self.display_rectangle_position()
 
-        if (
-            self.coordinates_validator(
-                self.start_x,
-                self.current_x,
-                self.start_y,
-                self.current_y,
-            )
-            is False
-        ):
+        coords = (self.start_x, self.current_x, self.start_y, self.current_y)
+        if self.coordinates_validator(*coords) is False:
             logger.warning(
                 'Была выбрана слишком маленькая область, '
                 'распознавание отменено'
             )
             return self.destroy_screenshot_mode()
 
-        if self.start_x <= self.current_x and self.start_y <= self.current_y:
-            self.exit_screenshot_mode()
-            self.take_bounded_screenshot(
-                self.start_x,
-                self.start_y,
-                self.current_x - self.start_x,
-                self.current_y - self.start_y,
-            )
+        x1 = min(self.start_x, self.current_x)
+        y1 = min(self.start_y, self.current_y)
+        x2 = abs(self.current_x - self.start_x)
+        y2 = abs(self.current_y - self.start_y)
 
-        elif self.start_x >= self.current_x and self.start_y <= self.current_y:
-            self.exit_screenshot_mode()
-            self.take_bounded_screenshot(
-                self.current_x,
-                self.start_y,
-                self.start_x - self.current_x,
-                self.current_y - self.start_y,
-            )
-
-        elif self.start_x <= self.current_x and self.start_y >= self.current_y:
-            self.exit_screenshot_mode()
-            self.take_bounded_screenshot(
-                self.start_x,
-                self.current_y,
-                self.current_x - self.start_x,
-                self.start_y - self.current_y,
-            )
-
-        elif self.start_x >= self.current_x and self.start_y >= self.current_y:
-            self.exit_screenshot_mode()
-            self.take_bounded_screenshot(
-                self.current_x,
-                self.current_y,
-                self.start_x - self.current_x,
-                self.start_y - self.current_y,
-            )
+        self.exit_screenshot_mode()
+        self.take_bounded_screenshot(x1, y1, x2, y2)
 
     def on_snip_drag(self, event):
         self.current_x, self.current_y = (event.x, event.y)
@@ -189,17 +154,10 @@ class SnippingTool:
         pillow_y2 = y1 + y2
 
         # add this so that the translation window will appear in the same place
-        # where the snipping tool used
+        # where snipping tool used
         correction = 3
+        coords = [crd + correction for crd in (x1, y1, pillow_x2, pillow_y2)]
 
-        image = self.screenshot.crop(
-            (
-                x1 + correction,
-                y1 + correction,
-                pillow_x2 + correction,
-                pillow_y2 + correction,
-            ),
-        )
-        # logger.debug(f'размер изображения: {image.size}')
-
+        image = self.screenshot.crop(coords)
+        logger.debug(f'размер изображения: {image.size}')
         self.snip_trigger(image, (x1, y1))
