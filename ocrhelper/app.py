@@ -50,6 +50,7 @@ class App:
         img = Image.open('load_easyocr.png')
         self.easyocr_model.readtext(numpy.array(img))
 
+        self.gui.load_ocr_toast.hide_toast_immediately()
         self.gui.loaded_ocr_toast.show_toast()
 
     def load_easyocr_model(self):
@@ -61,7 +62,7 @@ class App:
 
     def load_easyocr_with_toast(self):
         """Load EasyOCR with some languages
-         if they are changed from previous load"""
+        if they are changed from previous load"""
         new_languages = self.gui.get_selected_languages()
         if self.languages != new_languages:
             self.languages = new_languages
@@ -69,6 +70,7 @@ class App:
             self.gui.load_ocr_toast.show_toast()
             self.gui.update()
             self.load_easyocr_model()
+            self.gui.load_ocr_toast.hide_toast_immediately()
             self.gui.loaded_ocr_toast.show_toast()
 
     def snip_trigger(self, image: Image.Image, coordinates: tuple):

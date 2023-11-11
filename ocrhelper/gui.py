@@ -20,7 +20,8 @@ class Gui(ctk.CTk):
         self.config = config
         self.snip_trigger = snip_trigger
         self.load_ocr = load_ocr
-
+        
+        self.mode_var = None
         self.use_debug_win = False
         self.animation_started = False
         self.settings_on_screen = False
@@ -43,23 +44,7 @@ class Gui(ctk.CTk):
         self.geometry(f'+{x_coordinate}+{y_coordinate}')
 
         self._create_system_tray_icon()
-
-        self.mode_var = ctk.StringVar(self, 'translation')
-        translator_mode_button = create_stylish_button(
-            self, 'Перевод', lambda: self.change_mode_var('translation')
-        )
-        translator_mode_button.place(relx=0.073, rely=0.353)
-
-        dict_mode_button = create_stylish_button(
-            self, 'Словарь', lambda: self.change_mode_var('dict')
-        )
-        dict_mode_button.place(relx=0.389, rely=0.353)
-
-        decrypt_mode_button = create_stylish_button(
-            self, 'Decrypt', lambda: self.change_mode_var('decrypt')
-        )
-        decrypt_mode_button.place(relx=0.705, rely=0.353)
-
+        self._place_mode_buttons()
         self._place_settings_button()
 
         self.settings_frame = SettingsFrame(self, self.config, self.load_ocr)
@@ -146,6 +131,23 @@ class Gui(ctk.CTk):
             '<Enter>', self.settings_button, self.settings_im_dark
         )
         self.bind_button('<Leave>', self.settings_button, self.settings_im)
+    
+    def _place_mode_buttons(self):
+        self.mode_var = ctk.StringVar(self, 'translation')
+        translator_mode_button = create_stylish_button(
+            self, 'Перевод', lambda: self.change_mode_var('translation')
+        )
+        translator_mode_button.place(relx=0.073, rely=0.353)
+        
+        dict_mode_button = create_stylish_button(
+            self, 'Словарь', lambda: self.change_mode_var('dict')
+        )
+        dict_mode_button.place(relx=0.389, rely=0.353)
+        
+        decrypt_mode_button = create_stylish_button(
+            self, 'Decrypt', lambda: self.change_mode_var('decrypt')
+        )
+        decrypt_mode_button.place(relx=0.705, rely=0.353)
 
     def _create_snipping_tool(self):
         additional_methods = {
