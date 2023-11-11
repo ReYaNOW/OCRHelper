@@ -1,3 +1,4 @@
+import json
 import tkinter as tk
 from typing import Callable
 
@@ -11,10 +12,12 @@ from ocrhelper.gui_parts.debug_window import DebugWindow, DebugWindowNullObject
 from ocrhelper.gui_parts.gui_settings import SettingsFrame
 from ocrhelper.gui_parts.snip import SnippingTool
 from ocrhelper.gui_parts.toast import ToastNotification
+from ocrhelper.components.utils import create_stylish_button
 
 
 class Gui(ctk.CTk):
-    def __init__(self, snip_trigger, load_ocr: Callable):
+    def __init__(self, config, snip_trigger, load_ocr: Callable):
+        self.config = config
         self.snip_trigger = snip_trigger
         self.load_ocr = load_ocr
         self.use_debug_win = False
@@ -45,15 +48,19 @@ class Gui(ctk.CTk):
         self.protocol('WM_DELETE_WINDOW', lambda: self.withdraw())
 
         self.mode_var = ctk.StringVar(self, 'translation')
-        translator_mode_button = self.create_mode_button(
-            'Перевод', 'translation'
+        translator_mode_button = create_stylish_button(
+            self, 'Перевод', lambda: self.change_mode_var('translation')
         )
         translator_mode_button.place(relx=0.073, rely=0.353)
 
-        dict_mode_button = self.create_mode_button('Словарь', 'dict')
+        dict_mode_button = create_stylish_button(
+            self, 'Словарь', lambda: self.change_mode_var('dict')
+        )
         dict_mode_button.place(relx=0.389, rely=0.353)
 
-        decrypt_mode_button = self.create_mode_button('Decrypt', 'decrypt')
+        decrypt_mode_button = create_stylish_button(
+            self, 'Decrypt', lambda: self.change_mode_var('decrypt')
+        )
         decrypt_mode_button.place(relx=0.705, rely=0.353)
 
         self.settings_im = self.open_tk_img('assets/settings.png')
@@ -80,6 +87,7 @@ class Gui(ctk.CTk):
 
         self.settings_frame = SettingsFrame(
             self,
+            self.config,
             self.load_ocr,
             settings_im=self.settings_im,
             settings_im_dark=self.settings_im_dark,
@@ -188,6 +196,14 @@ class Gui(ctk.CTk):
         self.deiconify()
 
     def quit_window(self, tray_icon):
+        self.config['recognition_languages'] = self.get_selected_languages()
+        self.config['translator'] = self.get_selected_translator()
+        self.config['rect_color'] = self.get_rect_color()
+        self.config.update(self.get_option_win_values())
+        
+        with open('config.json', 'w') as config:
+            config.write(json.dumps(self.config))
+        
         self.debug_window.window.destroy()
         self.deiconify()
         self.update()

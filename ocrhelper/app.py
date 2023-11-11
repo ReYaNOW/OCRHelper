@@ -1,3 +1,4 @@
+import json
 import tkinter as tk
 
 import numpy
@@ -8,7 +9,8 @@ from tkextrafont import Font
 
 from ocr import TextRecognition
 from ocrhelper.gui import Gui
-from ocrhelper.gui_parts.translation import translation, TranslationWindow
+from ocrhelper.gui_parts.translation_window import TranslationWindow
+from ocrhelper.components.translation import translation
 
 
 class App:
@@ -20,7 +22,12 @@ class App:
         self.languages = None
         self.use_gpt_stream = False
 
-        self.gui = Gui(self.snip_trigger, self.load_easyocr_with_toast)
+        with open('config.json') as config_file:
+            self.config = json.load(config_file)
+
+        self.gui = Gui(
+            self.config, self.snip_trigger, self.load_easyocr_with_toast
+        )
 
         # load font if it is not installed in the system
         if 'Rubik' not in tk.font.families():
@@ -37,7 +44,7 @@ class App:
         import easyocr
 
         self.easyocr = easyocr
-        self.languages = ['en']
+        self.languages = self.config['recognition_languages']
         self.load_easyocr_model()
 
         img = Image.open('load_easyocr.png')

@@ -1,16 +1,19 @@
 import tkinter as tk
 from typing import Callable
 
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageColor
 
 import customtkinter as ctk
+
+from ocrhelper.components.utils import create_stylish_button
 
 
 class SettingsFrame(ctk.CTkFrame):
     def __init__(
-        self, master, load_ocr: Callable, settings_im, settings_im_dark
+        self, master, config, load_ocr: Callable, settings_im, settings_im_dark
     ):
         super().__init__(master, fg_color="#262834", width=670, height=300)
+        self.config = config
         self.load_ocr = load_ocr
         self.settings_im = settings_im
         self.settings_im_dark = settings_im_dark
@@ -19,26 +22,23 @@ class SettingsFrame(ctk.CTkFrame):
         languages_frame.place(relx=0.2375, rely=0.24, anchor='center')
         self.get_selected_languages = languages_frame.get_selected_languages
 
-        translators_frame = TranslatorsFrame(self)
+        translators_frame = TranslatorsFrame(self, config['translator'])
         translators_frame.place(relx=0.2375, rely=0.638, anchor='center')
         self.get_selected_translator = (
             translators_frame.get_selected_translator
         )
 
-        self.palette_frame = PaletteFrame(self)
+        self.palette_frame = PaletteFrame(self, config['rect_color'])
         self.palette_frame.place(relx=0.73, rely=0.406, anchor='center')
         self.get_rect_color = self.palette_frame.get_rect_color
 
-        self.options_window = OptionsWindow(self)
-        self.addit_sett_button = ctk.CTkButton(
+        self.options_window = OptionsWindow(self, config)
+        self.addit_sett_button = create_stylish_button(
             self,
-            font=('Rubik bold', 16),
             text='Дополнительные настройки',
-            fg_color='#5429FE',
-            hover_color='#4a1e9e',
+            fontsize=16,
             command=self.open_option_window,
             height=45,
-            corner_radius=20,
         )
         self.addit_sett_button.place(relx=0.2375, rely=0.885, anchor='center')
         self.additional_settings = ctk.CTkFrame(self)
@@ -79,16 +79,13 @@ class LanguagesFrame(ctk.CTkFrame):
         self.jap_var, jap_option = self.create_lang_option('JAP')
         jap_option.place(relx=0.80, rely=0.525, anchor='center')
 
-        change_button = ctk.CTkButton(
+        change_button = create_stylish_button(
             self,
-            font=('Rubik bold', 16),
             text='Сменить',
+            fontsize=16,
             command=self.press_load_ocr_btn,
-            fg_color='#5429FE',
-            hover_color='#4a1e9e',
             width=65,
             height=30,
-            corner_radius=20,
         )
         change_button.place(relx=0.5, rely=0.808, anchor='center')
 
@@ -127,7 +124,7 @@ class LanguagesFrame(ctk.CTkFrame):
 
 
 class TranslatorsFrame(ctk.CTkFrame):
-    def __init__(self, settings_frame: SettingsFrame):
+    def __init__(self, settings_frame: SettingsFrame, default_transl):
         super().__init__(
             settings_frame,
             bg_color='#262834',
@@ -145,7 +142,7 @@ class TranslatorsFrame(ctk.CTkFrame):
         )
         translator_label.place(relx=0.5, rely=0.23, anchor='center')
 
-        self.translator_var = ctk.StringVar(self, 'Google')
+        self.translator_var = ctk.StringVar(self, default_transl)
         translators_segmented_btn = ctk.CTkSegmentedButton(
             self,
             values=["Google", "GPT", 'GPT Stream'],
@@ -161,7 +158,7 @@ class TranslatorsFrame(ctk.CTkFrame):
 
 
 class PaletteFrame(ctk.CTkFrame):
-    def __init__(self, settings: SettingsFrame):
+    def __init__(self, settings: SettingsFrame, rect_color):
         super().__init__(
             settings,
             bg_color='#262834',
@@ -170,21 +167,27 @@ class PaletteFrame(ctk.CTkFrame):
             height=230,
         )
 
-        self.rect_color = '#b800cf'
+        self.rect_color = rect_color
+        self.rect_color_default = '#b800cf'
+        self.rect_color_def_rgb = (184, 0, 207)
+        self.rect_color_config = rect_color
+        self.rect_color_rgb = ImageColor.getcolor(rect_color, "RGB")
 
         self.example_canvas = ctk.CTkCanvas(
             self, width=315, height=55, highlightthickness=0
         )
         self.example_canvas.place(relx=0.5, rely=0.84, anchor='center')
 
-        red_widgets = self.create_color_labels_and_slider('Red', 'red', 184)
+        red_widgets = self.create_color_labels_and_slider(
+            'Red', 'red', self.rect_color_rgb[0]
+        )
         red_label, red_label_value, red_var, red_slider = red_widgets
         red_label.place(relx=0.1, rely=0.35, anchor='center')
         red_label_value.place(relx=0.225, rely=0.35, anchor='center')
         red_slider.place(relx=0.58, rely=0.35, anchor='center')
 
         green_widgets = self.create_color_labels_and_slider(
-            'Green', '#00E81A', 0
+            'Green', '#00E81A', self.rect_color_rgb[1]
         )
         green_label, green_label_value, green_var, green_slider = green_widgets
         green_label.place(relx=0.1, rely=0.5, anchor='center')
@@ -192,7 +195,7 @@ class PaletteFrame(ctk.CTkFrame):
         green_slider.place(relx=0.58, rely=0.5, anchor='center')
 
         blue_widgets = self.create_color_labels_and_slider(
-            'Blue', '#0376FF', 207
+            'Blue', '#0376FF', self.rect_color_rgb[2]
         )
         blue_label, blue_label_value, blue_var, blue_slider = blue_widgets
         blue_label.place(relx=0.1, rely=0.65, anchor='center')
@@ -206,7 +209,7 @@ class PaletteFrame(ctk.CTkFrame):
             -7, 0, anchor='nw', image=example_img_ctk
         )
         self.rect = self.example_canvas.create_rectangle(
-            3, 10, 312, 50, outline='#b800cf', width=2
+            3, 10, 312, 50, outline=self.rect_color_config, width=2
         )
 
         self.red_var = red_var
@@ -219,7 +222,7 @@ class PaletteFrame(ctk.CTkFrame):
         hex_label = ctk.CTkLabel(self, text='HEX :', font=("Rubik bold", 15))
         hex_label.place(relx=0.285, rely=0.15, anchor='center')
 
-        self.hex_var = ctk.StringVar(self, '#b800cf')
+        self.hex_var = ctk.StringVar(self, self.rect_color_config)
         self.hex_entry = ctk.CTkEntry(self, textvariable=self.hex_var)
         self.hex_entry.place(relx=0.365, rely=0.09)
         self.hex_entry.bind("<Leave>", lambda event: self.focus())
@@ -283,10 +286,10 @@ class PaletteFrame(ctk.CTkFrame):
         self.example_canvas.itemconfigure(self.rect, outline=hex_color)
 
     def return_rect_color_to_default(self):
-        self.red_var.set(184)
-        self.green_var.set(0)
-        self.blue_var.set(207)
-        self.hex_var.set("#b800cf")
+        self.red_var.set(self.rect_color_def_rgb[0])
+        self.green_var.set(self.rect_color_def_rgb[1])
+        self.blue_var.set(self.rect_color_def_rgb[2])
+        self.hex_var.set(self.rect_color_default)
         self.change_rect_color()
 
     def change_color_from_entry(self):
@@ -337,7 +340,8 @@ class PaletteFrame(ctk.CTkFrame):
 
 
 class OptionsWindow(ctk.CTkToplevel):
-    def __init__(self, settings_frame):
+    def __init__(self, settings_frame, config):
+        self.config = config
         super().__init__(
             settings_frame, width=292, height=280, fg_color='#4a1e9e'
         )
@@ -364,22 +368,27 @@ class OptionsWindow(ctk.CTkToplevel):
         frame.pack()
 
         self.clipboard_frame = OptionsFrame(
-            frame, 'Добавлять распознанный', 'текст в буфер обмена'
+            frame,
+            'Добавлять распознанный',
+            'текст в буфер обмена',
+            var_value=self.config['need_copy_to_clipboard'],
         )
         self.clipboard_frame.place(relx=0.5, rely=0.1875, anchor='center')
 
-        self.debug_frame = OptionsFrame(frame, 'Использовать debug', 'окно')
+        self.debug_frame = OptionsFrame(
+            frame,
+            'Использовать debug',
+            'окно',
+            var_value=self.config['use_debug_window'],
+        )
         self.debug_frame.place(relx=0.5, rely=0.54, anchor='center')
 
-        save_button = ctk.CTkButton(
+        save_button = create_stylish_button(
             frame,
-            font=('Rubik bold', 16),
             text='Сохранить',
-            fg_color='#5429FE',
-            hover_color='#4a1e9e',
+            fontsize=16,
             command=self.withdraw,
             height=45,
-            corner_radius=20,
         )
         save_button.place(relx=0.5, rely=0.85, anchor='center')
 
@@ -391,7 +400,7 @@ class OptionsWindow(ctk.CTkToplevel):
 
 
 class OptionsFrame(ctk.CTkFrame):
-    def __init__(self, settings: ctk.CTkFrame, text1, text2):
+    def __init__(self, settings: ctk.CTkFrame, text1, text2, var_value):
         super().__init__(
             settings,
             bg_color='#262834',
@@ -409,7 +418,7 @@ class OptionsFrame(ctk.CTkFrame):
         )
         label.place(relx=0.5, rely=0.35, anchor='center')
 
-        self.var = ctk.BooleanVar(self, False)
+        self.var = ctk.BooleanVar(self, var_value)
         self.checkbox = ctk.CTkCheckBox(
             self,
             font=("Rubik", 18),
