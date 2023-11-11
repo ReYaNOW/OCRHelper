@@ -124,14 +124,14 @@ class App:
         x1, y1 = coordinates
         TranslationWindow(
             self.gui,
+            self.gui.debug_window,
             image,
             {
                 'text': text,
                 'translated_text': translated_text,
                 'coordinates': (x1, y1),
+                'use_gpt_stream': self.use_gpt_stream,
             },
-            self.gui.debug_window,
-            self.use_gpt_stream,
         )
         self.gui.debug_window.add_message('Перевод прошел успешно!', 'green')
         self.use_gpt_stream = False

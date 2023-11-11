@@ -5,8 +5,6 @@ from time import sleep
 import keyboard
 import openai
 from PIL import ImageTk
-from deep_translator import GoogleTranslator
-from loguru import logger
 
 from gui_parts.debug_window import DebugWindow
 
@@ -17,57 +15,62 @@ openai.api_key = api_key
 class TranslationWindow:
     """Create a tkinter window for displaying translated text"""
 
-    def __init__(self, gui, image, text_related, debug_window, use_gpt_stream):
+    def __init__(self, gui, debug_window, image, text_related):
+        self.debug_window: DebugWindow = debug_window
         self.image = image
         self.original_text = text_related['text']
         self.translated_text = text_related['translated_text']
         self.coordinates = text_related['coordinates']
-        self.use_gpt_stream = use_gpt_stream
-        self.debug_window: DebugWindow = debug_window
+        self.use_gpt_stream = text_related['use_gpt_stream']
 
-        # create new window to display recognized and translated text
-        self.new_window = tk.Toplevel(gui)
-        self.new_window.overrideredirect(True)
-        self.new_window.attributes('-topmost', True)
+        self.transl_window = tk.Toplevel(gui)
+        self.transl_window.overrideredirect(True)
+        self.transl_window.attributes('-topmost', True)
+
+        self.transl_window.bind(
+            '<FocusOut>', lambda event: self.close_transl_window()
+        )
+
+        self.transl_window.bind(
+            '<ButtonRelease>', lambda event: self.close_transl_window()
+        )
 
         # ensure that translation window is in the focus to make
         # <FocusOut> 100% work
-        self.new_window.after(1, lambda: self.new_window.focus_force())
-        self.new_window.bind('<FocusOut>', lambda event: self.window_trigger())
+        self.transl_window.after(1, lambda: self.transl_window.focus_force())
 
-        self.new_window.bind(
-            '<ButtonRelease>', lambda event: self.window_trigger()
-        )
-
-        # add hotkey to close this window if needed
-        keyboard.add_hotkey('escape', callback=self.window_trigger)
+        keyboard.add_hotkey('escape', callback=self.close_transl_window)
 
         # change window position to the place where user took a screenshot
         x1, y1 = self.coordinates
-        self.new_window.geometry(f'+{int(x1)}+{int(y1)}')
+        self.transl_window.geometry(f'+{int(x1)}+{int(y1)}')
 
-        # pack lg_frames with image
-        image_frame = self.frame_with_borders(self.new_window)
-
-        tkinter_image = ImageTk.PhotoImage(image)
-        label_image = tk.Label(image_frame, image=tkinter_image)
-        label_image.image = tkinter_image
-        label_image.pack()
+        self._pack_screenshot()
 
         # get width for both labels, so they adapt to the width of image
         self.width = image.size[0]
 
-        # create and pack label with Recognized text
-        recognized_text_frame = self.frame_with_borders(self.new_window)
+        self._pack_recognized_text()
+        self._pack_translated_text()
+
+    def _pack_screenshot(self):
+        image_frame = self.frame_with_borders(self.transl_window)
+        tkinter_image = ImageTk.PhotoImage(self.image)
+
+        label_image = tk.Label(image_frame, image=tkinter_image)
+        label_image.image = tkinter_image
+        label_image.pack()
+
+    def _pack_recognized_text(self):
+        recognized_text_frame = self.frame_with_borders(self.transl_window)
         recognized_text_label = self.custom_label(
             recognized_text_frame,
             self.original_text,
         )
-
         recognized_text_label.pack(expand=True, fill='x')
 
-        # create and pack label with Translated text
-        translated_text_frame = self.frame_with_borders(self.new_window)
+    def _pack_translated_text(self):
+        translated_text_frame = self.frame_with_borders(self.transl_window)
 
         if self.use_gpt_stream:
             self.translation_var = tk.StringVar()
@@ -88,17 +91,6 @@ class TranslationWindow:
         if self.use_gpt_stream:
             self.stream_loop()
 
-    @staticmethod
-    def frame_with_borders(new_window: tk.Toplevel):
-        """Create a new lg_frames with borders inside the given window"""
-        image_frame = tk.Frame(
-            new_window,
-            highlightbackground='grey',
-            highlightthickness=1,
-        )
-        image_frame.pack(expand=True, fill='both')
-        return image_frame
-
     def custom_label(self, frame, text: str | tk.StringVar, is_variable=False):
         """Create a custom label with specified parameters"""
         arguments = {
@@ -115,11 +107,11 @@ class TranslationWindow:
 
         return tk.Label(**arguments)
 
-    def window_trigger(self):
+    def close_transl_window(self):
         self.debug_window.clear_text_area()
         self.debug_window.tkinter_withdraw()
-        self.new_window.destroy()
-    
+        self.transl_window.destroy()
+
     def stream_loop(self):
         """Display translated text in real-time if GPT stream is used"""
         word = ''
@@ -133,60 +125,16 @@ class TranslationWindow:
                     current_text = self.translation_var.get()
                     self.translation_var.set(current_text + word + char)
 
-                    self.new_window.update()
+                    self.transl_window.update()
                     word = ''
 
-
-def translation(text, from_lang, to_lang, translator='Google Translator'):
-    logger.info(f'Перевод при помощи {translator}')
-    match translator:
-        case 'Google':
-            if len(from_lang) == 1 or from_lang not in ('ru', 'en'):
-                from_lang_checked = 'auto'
-            else:
-                from_lang_checked = from_lang[0]
-
-            translator_obj = GoogleTranslator(
-                source=from_lang_checked,
-                target=to_lang,
-            )
-            return translator_obj.translate(text=text)
-
-        case 'GPT':
-            from_lang_conv = lang_convert(from_lang)
-            to_lang_conv = lang_convert(to_lang)
-            return gpt_request(text, from_lang_conv, to_lang_conv)
-
-        case 'GPT Stream':
-            from_lang_conv = lang_convert(from_lang)
-            to_lang_conv = lang_convert(to_lang)
-            return gpt_request(
-                text, from_lang_conv, to_lang_conv, use_stream=True
-            )
-
-
-def gpt_request(text, from_lang, to_lang, use_stream=False):
-    request = f'Please translate the user message from {from_lang} to\
-     {to_lang}. Make the translation sound as natural as possible.\
-      In answer write only translation.\n\n {text}'
-
-    response = openai.ChatCompletion.create(
-        model='gpt-3.5-turbo-1106',
-        messages=[{'role': 'user', 'content': request}],
-        stream=use_stream,
-    )
-    if use_stream:
-        return response
-    return response['choices'][0]['message']['content']
-
-
-def lang_convert(language):
-    match language:
-        case 'eng':
-            return 'english'
-        case 'rus':
-            return 'russian'
-        case 'eng+rus':
-            return 'english and russian'
-        case _:
-            return language
+    @staticmethod
+    def frame_with_borders(new_window: tk.Toplevel):
+        """Create a new lg_frames with borders inside the given window"""
+        image_frame = tk.Frame(
+            new_window,
+            highlightbackground='grey',
+            highlightthickness=1,
+        )
+        image_frame.pack(expand=True, fill='both')
+        return image_frame
