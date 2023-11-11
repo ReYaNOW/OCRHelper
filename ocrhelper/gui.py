@@ -20,7 +20,13 @@ class Gui(ctk.CTk):
         self.config = config
         self.snip_trigger = snip_trigger
         self.load_ocr = load_ocr
+
         self.use_debug_win = False
+        self.animation_started = False
+        self.settings_on_screen = False
+        self.pos = 0
+        self.start_pos = 1
+        self.end_pos = 0
 
         super().__init__(fg_color="#262834")
         self.title('OCR Helper')
@@ -36,16 +42,7 @@ class Gui(ctk.CTk):
 
         self.geometry(f'+{x_coordinate}+{y_coordinate}')
 
-        # tray
-        image = Image.open(r'assets\icon.ico')
-        menu = (
-            item('Open menu', self.show_window, default=True),
-            item('Exit', self.quit_window),
-        )
-
-        tray_icon = pystray.Icon('OCRHelper', image, 'OCRHelper', menu)
-        tray_icon.run_detached()
-        self.protocol('WM_DELETE_WINDOW', lambda: self.withdraw())
+        self._create_system_tray_icon()
 
         self.mode_var = ctk.StringVar(self, 'translation')
         translator_mode_button = create_stylish_button(
@@ -63,27 +60,7 @@ class Gui(ctk.CTk):
         )
         decrypt_mode_button.place(relx=0.705, rely=0.353)
 
-        self.settings_im = self.open_tk_img('assets/settings.png')
-        self.settings_im_dark = self.open_tk_img('assets/settings dark.png')
-
-        self.settings_button = tk.Button(
-            image=self.settings_im,
-            command=self.animate,
-            borderwidth=0,
-            highlightthickness=0,
-            disabledforeground='#262834',
-            activebackground='#262834',
-            background='#262834',
-            width=45,
-            height=45,
-            relief="flat",
-        )
-        self.settings_button.place(relx=0.919, rely=0.825)
-
-        self.bind_button(
-            '<Enter>', self.settings_button, self.settings_im_dark
-        )
-        self.bind_button('<Leave>', self.settings_button, self.settings_im)
+        self._place_settings_button()
 
         self.settings_frame = SettingsFrame(self, self.config, self.load_ocr)
         self.settings_frame.place(relx=0, rely=0, anchor='sw')
@@ -102,23 +79,7 @@ class Gui(ctk.CTk):
         self.debug_window = DebugWindow(self)
         self.debug_window_null = DebugWindowNullObject(self)
 
-        additional_methods = {
-            'gui_update': self.update,
-            'snip_trigger': self.snip_trigger,
-            'debug_window': self.debug_window_null,
-            'get_rect_color': self.get_rect_color,
-        }
-        self.snipping_tool = SnippingTool(self, additional_methods)
-
-        keyboard.add_hotkey(
-            'ctrl + shift + x', callback=self.run_snipping_tool
-        )
-
-        self.animation_started = False
-        self.settings_on_screen = False
-        self.pos = 0
-        self.start_pos = 1
-        self.end_pos = 0
+        self._create_snipping_tool()
 
     def animate(self):
         if not self.animation_started:
@@ -152,6 +113,52 @@ class Gui(ctk.CTk):
         current_debug_win = self.get_current_debug_win()
         self.snipping_tool.change_debug_win_instance(current_debug_win)
         self.snipping_tool.display_snipping_tool()
+
+    def _create_system_tray_icon(self):
+        image = Image.open(r'assets\icon.ico')
+        menu = (
+            item('Open menu', self.show_window, default=True),
+            item('Exit', self.quit_window),
+        )
+
+        tray_icon = pystray.Icon('OCRHelper', image, 'OCRHelper', menu)
+        tray_icon.run_detached()
+        self.protocol('WM_DELETE_WINDOW', lambda: self.withdraw())
+
+    def _place_settings_button(self):
+        self.settings_im = self.open_tk_img('assets/settings.png')
+        self.settings_im_dark = self.open_tk_img('assets/settings dark.png')
+
+        self.settings_button = tk.Button(
+            image=self.settings_im,
+            command=self.animate,
+            borderwidth=0,
+            highlightthickness=0,
+            disabledforeground='#262834',
+            activebackground='#262834',
+            background='#262834',
+            width=45,
+            height=45,
+            relief="flat",
+        )
+        self.settings_button.place(relx=0.919, rely=0.825)
+        self.bind_button(
+            '<Enter>', self.settings_button, self.settings_im_dark
+        )
+        self.bind_button('<Leave>', self.settings_button, self.settings_im)
+
+    def _create_snipping_tool(self):
+        additional_methods = {
+            'gui_update': self.update,
+            'snip_trigger': self.snip_trigger,
+            'debug_window': self.debug_window_null,
+            'get_rect_color': self.get_rect_color,
+        }
+        self.snipping_tool = SnippingTool(self, additional_methods)
+
+        keyboard.add_hotkey(
+            'ctrl + shift + x', callback=self.run_snipping_tool
+        )
 
     def get_option_window_values(self) -> dict:
         return self.settings_frame.options_window.get_var_values()
