@@ -5,7 +5,6 @@ from the module
 https://github.com/israel-dryer/ttkbootstrap/blob/master/src/ttkbootstrap/toast.py
 
 and modified by me"""
-import tkinter as tk
 import customtkinter as ctk
 from _tkinter import TclError
 
@@ -125,25 +124,26 @@ class ToastNotification:
         )
         # symbol font
         self.iconfont = ctk.CTkFont(size=43, weight="bold")
-        if winsys == "win32":
-            self.iconfont["family"] = "Segoe UI Symbol"
-            self.icon = DEFAULT_ICON_WIN32 if self.icon is None else self.icon
-            if self.position is None:
-                x, y = scale_size(self.toplevel, [5, 50])
-                self.position = (x, y, 'se')
-        elif winsys == "x11":
-            self.iconfont["family"] = "FreeSerif"
-            self.icon = DEFAULT_ICON if self.icon is None else self.icon
-            if self.position is None:
-                x, y = scale_size(self.toplevel, [0, 0])
-                self.position = (x, y, 'se')
-        else:
-            self.iconfont["family"] = "Apple Symbols"
-            self.toplevel.update_idletasks()
-            self.icon = DEFAULT_ICON if self.icon is None else self.icon
-            if self.position is None:
-                x, y = scale_size(self.toplevel, [50, 50])
-                self.position = (x, y, 'ne')
+        match winsys:
+            case "win32":
+                self.iconfont["family"] = "Segoe UI Symbol"
+                self.icon = DEFAULT_ICON_WIN32
+                if self.position is None:
+                    x, y = scale_size(self.toplevel, [5, 50])
+                    self.position = (x, y, 'se')
+            case "x11":
+                self.iconfont["family"] = "FreeSerif"
+                self.icon = DEFAULT_ICON if self.icon is None else self.icon
+                if self.position is None:
+                    x, y = scale_size(self.toplevel, [0, 0])
+                    self.position = (x, y, 'se')
+            case _:
+                self.iconfont["family"] = "Apple Symbols"
+                self.toplevel.update_idletasks()
+                self.icon = DEFAULT_ICON if self.icon is None else self.icon
+                if self.position is None:
+                    x, y = scale_size(self.toplevel, [50, 50])
+                    self.position = (x, y, 'ne')
 
         self.set_geometry()
 

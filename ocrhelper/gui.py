@@ -85,13 +85,7 @@ class Gui(ctk.CTk):
         )
         self.bind_button('<Leave>', self.settings_button, self.settings_im)
 
-        self.settings_frame = SettingsFrame(
-            self,
-            self.config,
-            self.load_ocr,
-            settings_im=self.settings_im,
-            settings_im_dark=self.settings_im_dark,
-        )
+        self.settings_frame = SettingsFrame(self, self.config, self.load_ocr)
         self.settings_frame.place(relx=0, rely=0, anchor='sw')
 
         self.load_ocr_toast = ToastNotification(
@@ -200,10 +194,10 @@ class Gui(ctk.CTk):
         self.config['translator'] = self.get_selected_translator()
         self.config['rect_color'] = self.get_rect_color()
         self.config.update(self.get_option_win_values())
-        
+
         with open('config.json', 'w') as config:
             config.write(json.dumps(self.config))
-        
+
         self.debug_window.window.destroy()
         self.deiconify()
         self.update()

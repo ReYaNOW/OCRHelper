@@ -9,28 +9,14 @@ from ocrhelper.components.utils import create_stylish_button
 
 
 class SettingsFrame(ctk.CTkFrame):
-    def __init__(
-        self, master, config, load_ocr: Callable, settings_im, settings_im_dark
-    ):
+    def __init__(self, master, config, load_ocr: Callable):
         super().__init__(master, fg_color="#262834", width=670, height=300)
         self.config = config
         self.load_ocr = load_ocr
-        self.settings_im = settings_im
-        self.settings_im_dark = settings_im_dark
 
-        languages_frame = LanguagesFrame(self, load_ocr)
-        languages_frame.place(relx=0.2375, rely=0.24, anchor='center')
-        self.get_selected_languages = languages_frame.get_selected_languages
-
-        translators_frame = TranslatorsFrame(self, config['translator'])
-        translators_frame.place(relx=0.2375, rely=0.638, anchor='center')
-        self.get_selected_translator = (
-            translators_frame.get_selected_translator
-        )
-
-        self.palette_frame = PaletteFrame(self, config['rect_color'])
-        self.palette_frame.place(relx=0.73, rely=0.406, anchor='center')
-        self.get_rect_color = self.palette_frame.get_rect_color
+        self._place_lang_frame()
+        self._place_transl_frame()
+        self._place_palette_frame()
 
         self.options_window = OptionsWindow(self, config)
         self.addit_sett_button = create_stylish_button(
@@ -42,6 +28,23 @@ class SettingsFrame(ctk.CTkFrame):
         )
         self.addit_sett_button.place(relx=0.2375, rely=0.885, anchor='center')
         self.additional_settings = ctk.CTkFrame(self)
+
+    def _place_lang_frame(self):
+        languages_frame = LanguagesFrame(self, self.load_ocr)
+        languages_frame.place(relx=0.2375, rely=0.24, anchor='center')
+        self.get_selected_languages = languages_frame.get_selected_languages
+
+    def _place_transl_frame(self):
+        translators_frame = TranslatorsFrame(self, self.config['translator'])
+        translators_frame.place(relx=0.2375, rely=0.638, anchor='center')
+        self.get_selected_translator = (
+            translators_frame.get_selected_translator
+        )
+
+    def _place_palette_frame(self):
+        self.palette_frame = PaletteFrame(self, self.config['rect_color'])
+        self.palette_frame.place(relx=0.73, rely=0.406, anchor='center')
+        self.get_rect_color = self.palette_frame.get_rect_color
 
     def open_option_window(self):
         self.options_window.update()
