@@ -61,7 +61,7 @@ class ToastNotification:
 
     def show_toast(self):
         self.hide_toast_immediately()
-        
+
         self.toplevel = ctk.CTkToplevel(self.master)
         self.toplevel.overrideredirect(True)
         self.toplevel.wm_attributes("-toolwindow", True)
@@ -109,7 +109,7 @@ class ToastNotification:
         except TclError:
             if self.toplevel:
                 self.toplevel.destroy()
-    
+
     def hide_toast_immediately(self):
         if self.toplevel:
             if self.toplevel.winfo_exists():

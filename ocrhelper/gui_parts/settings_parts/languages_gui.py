@@ -45,7 +45,7 @@ class LanguagesFrame(ctk.CTkFrame):
             height=30,
         )
         change_button.place(relx=0.5, rely=0.808, anchor='center')
-        
+
         self.load_langs_from_config()
 
     def press_load_ocr_btn(self):

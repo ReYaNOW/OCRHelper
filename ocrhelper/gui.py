@@ -47,11 +47,6 @@ class Gui(ctk.CTk):
         self.debug_window_null = DebugWindowNullObject(self)
         self._create_snipping_tool()
 
-    def run_snipping_tool(self):
-        current_debug_win = self.get_current_debug_win()
-        self.snipping_tool.change_debug_win_instance(current_debug_win)
-        self.snipping_tool.display_snipping_tool()
-
     def _change_geometry_to_center(self):
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -136,6 +131,11 @@ class Gui(ctk.CTk):
         keyboard.add_hotkey(
             'ctrl + shift + x', callback=self.run_snipping_tool
         )
+
+    def run_snipping_tool(self):
+        current_debug_win = self.get_current_debug_win()
+        self.snipping_tool.change_debug_win_instance(current_debug_win)
+        self.snipping_tool.display_snipping_tool()
 
     def get_option_window_values(self) -> dict:
         return self.settings_frame.options_window.get_var_values()
