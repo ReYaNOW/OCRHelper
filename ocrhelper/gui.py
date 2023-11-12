@@ -38,6 +38,7 @@ class Gui(ctk.CTk):
 
         self._change_geometry_to_center()
         self._create_system_tray_icon()
+        self._create_toast_notifications()
         self._place_mode_buttons()
         self._place_settings_button()
 
@@ -47,11 +48,8 @@ class Gui(ctk.CTk):
             self.settings_frame, self.settings_button
         )
 
-        self.create_toast_notifications()
-
         self.debug_window = DebugWindow(self)
         self.debug_window_null = DebugWindowNullObject(self)
-
         self._create_snipping_tool()
 
     def run_snipping_tool(self):
@@ -118,7 +116,7 @@ class Gui(ctk.CTk):
         )
         decrypt_mode_button.place(relx=0.705, rely=0.353)
 
-    def create_toast_notifications(self):
+    def _create_toast_notifications(self):
         self.load_ocr_toast = ToastNotification(
             self,
             message='Загрузка модели EasyOCR с выбранными языками',
