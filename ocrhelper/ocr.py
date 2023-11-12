@@ -1,7 +1,7 @@
 import numpy
 from loguru import logger
 
-from gui_parts.debug_window import DebugWindow
+from ocrhelper.gui_parts.debug_window import DebugWindow
 
 
 class TextRecognition:

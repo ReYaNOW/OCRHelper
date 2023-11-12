@@ -6,7 +6,7 @@ import keyboard
 import openai
 from PIL import ImageTk
 
-from gui_parts.debug_window import DebugWindow
+from ocrhelper.gui_parts.debug_window import DebugWindow
 
 api_key = os.getenv('GPT_API_KEY')
 openai.api_key = api_key

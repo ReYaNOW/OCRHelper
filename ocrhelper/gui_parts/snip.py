@@ -4,7 +4,7 @@ from loguru import logger
 import keyboard
 from PIL import ImageTk, ImageGrab
 
-from gui_parts.debug_window import DebugWindow
+from ocrhelper.gui_parts.debug_window import DebugWindow
 
 
 class SnippingTool:

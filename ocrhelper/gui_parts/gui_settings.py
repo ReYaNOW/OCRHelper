@@ -2,12 +2,12 @@ from typing import Callable
 
 import customtkinter as ctk
 
-from components.utils import create_stylish_button
+from ocrhelper.components.utils import create_stylish_button
 
-from gui_parts.settings_parts.languages_gui import LanguagesFrame
-from gui_parts.settings_parts.options_gui import OptionsWindow
-from gui_parts.settings_parts.palette_gui import PaletteFrame
-from gui_parts.settings_parts.translators_gui import TranslatorsFrame
+from ocrhelper.gui_parts.settings_parts.languages_gui import LanguagesFrame
+from ocrhelper.gui_parts.settings_parts.options_gui import OptionsWindow
+from ocrhelper.gui_parts.settings_parts.palette_gui import PaletteFrame
+from ocrhelper.gui_parts.settings_parts.translators_gui import TranslatorsFrame
 
 
 class SettingsFrame(ctk.CTkFrame):

@@ -7,9 +7,9 @@ from PIL import Image
 from loguru import logger
 from tkextrafont import Font
 
-from ocr import TextRecognition
+from ocrhelper.ocr import TextRecognition
 from ocrhelper.gui import Gui
-from translation_window import TranslationWindow
+from ocrhelper.translation_window import TranslationWindow
 from ocrhelper.components.translation import translation
 
 
