@@ -4,16 +4,17 @@ from typing import Callable
 
 import keyboard
 import pystray
-from PIL import Image, ImageTk
+from PIL import Image
 from pystray import MenuItem as item
 
 import customtkinter as ctk
+from ocrhelper.components.utils import bind_button_with_img, open_tk_img
+from ocrhelper.components.utils import create_stylish_button
+from ocrhelper.gui_parts.animation import AnimateWidget
 from ocrhelper.gui_parts.debug_window import DebugWindow, DebugWindowNullObject
 from ocrhelper.gui_parts.gui_settings import SettingsFrame
 from ocrhelper.gui_parts.snip import SnippingTool
 from ocrhelper.gui_parts.toast import ToastNotification
-from ocrhelper.components.utils import create_stylish_button
-from ocrhelper.gui_parts.animation import AnimateWidget
 
 
 class Gui(ctk.CTk):
@@ -69,8 +70,8 @@ class Gui(ctk.CTk):
         self.protocol('WM_DELETE_WINDOW', lambda: self.withdraw())
 
     def _place_settings_button(self):
-        self.settings_im = self.open_tk_img('../assets/settings.png')
-        self.settings_im_dark = self.open_tk_img('../assets/settings dark.png')
+        self.settings_im = open_tk_img('../assets/settings.png')
+        self.settings_im_dark = open_tk_img('../assets/settings dark.png')
 
         self.settings_button = tk.Button(
             image=self.settings_im,
@@ -85,10 +86,10 @@ class Gui(ctk.CTk):
             relief="flat",
         )
         self.settings_button.place(relx=0.919, rely=0.825)
-        self.bind_button(
+        bind_button_with_img(
             '<Enter>', self.settings_button, self.settings_im_dark
         )
-        self.bind_button('<Leave>', self.settings_button, self.settings_im)
+        bind_button_with_img('<Leave>', self.settings_button, self.settings_im)
 
     def _place_mode_buttons(self):
         self.mode_var = ctk.StringVar(self, 'translation')
@@ -161,12 +162,6 @@ class Gui(ctk.CTk):
             corner_radius=20,
         )
 
-    def bind_button(self, type_of_bind, button: tk.Button, image: ImageTk):
-        button.bind(
-            type_of_bind,
-            lambda e: self.change_button_color(button, image),
-        )
-
     def change_mode_var(self, mode):
         self.mode_var = mode
 
@@ -199,14 +194,3 @@ class Gui(ctk.CTk):
 
     def get_rect_color(self):
         return self.settings_frame.get_rect_color()
-
-    @staticmethod
-    def change_button_color(button: tk.Button, image: ImageTk):
-        button.configure(image=image)
-        button.image = image
-
-    @staticmethod
-    def open_tk_img(path_to_image: str):
-        image = Image.open(path_to_image)
-        image_tk = ImageTk.PhotoImage(image, size=(96, 96))
-        return image_tk
