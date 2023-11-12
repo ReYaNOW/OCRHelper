@@ -47,17 +47,8 @@ class Gui(ctk.CTk):
             self.settings_frame, self.settings_button
         )
 
-        self.load_ocr_toast = ToastNotification(
-            self,
-            message='Загрузка модели EasyOCR с выбранными языками',
-            icon_color='orange',
-        )
-        self.loaded_ocr_toast = ToastNotification(
-            self,
-            message='Модель EasyOCR загружена, программа готова к работе',
-            icon_color='#00E81A',
-            duration=5000,
-        )
+        self.create_toast_notifications()
+
         self.debug_window = DebugWindow(self)
         self.debug_window_null = DebugWindowNullObject(self)
 
@@ -126,6 +117,19 @@ class Gui(ctk.CTk):
             self, 'Decrypt', lambda: self.change_mode_var('decrypt')
         )
         decrypt_mode_button.place(relx=0.705, rely=0.353)
+
+    def create_toast_notifications(self):
+        self.load_ocr_toast = ToastNotification(
+            self,
+            message='Загрузка модели EasyOCR с выбранными языками',
+            icon_color='orange',
+        )
+        self.loaded_ocr_toast = ToastNotification(
+            self,
+            message='Модель EasyOCR загружена, программа готова к работе',
+            icon_color='#00E81A',
+            duration=5000,
+        )
 
     def _create_snipping_tool(self):
         additional_methods = {
