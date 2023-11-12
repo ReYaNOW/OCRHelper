@@ -13,6 +13,7 @@ from ocrhelper.gui_parts.gui_settings import SettingsFrame
 from ocrhelper.gui_parts.snip import SnippingTool
 from ocrhelper.gui_parts.toast import ToastNotification
 from ocrhelper.components.utils import create_stylish_button
+from ocrhelper.gui_parts.animation import AnimateWidget
 
 
 class Gui(ctk.CTk):
@@ -20,7 +21,7 @@ class Gui(ctk.CTk):
         self.config = config
         self.snip_trigger = snip_trigger
         self.load_ocr = load_ocr
-        
+
         self.mode_var = None
         self.use_debug_win = False
         self.animation_started = False
@@ -42,6 +43,9 @@ class Gui(ctk.CTk):
 
         self.settings_frame = SettingsFrame(self, self.config, self.load_ocr)
         self.settings_frame.place(relx=0, rely=0, anchor='sw')
+        self.animated_widget = AnimateWidget(
+            self.settings_frame, self.settings_button
+        )
 
         self.load_ocr_toast = ToastNotification(
             self,
@@ -59,46 +63,18 @@ class Gui(ctk.CTk):
 
         self._create_snipping_tool()
 
-    def animate(self):
-        if not self.animation_started:
-            self.animation_started = True
-            if not self.settings_on_screen:
-                self.animate_forward()
-            else:
-                self.animate_backwards()
-
-    def animate_forward(self):
-        if self.pos < self.start_pos:
-            self.pos += 0.035
-            self.settings_frame.place(relx=0, rely=self.pos, anchor='sw')
-            self.settings_button.lift()
-            self.after(15, self.animate_forward)
-        else:
-            self.animation_started = False
-            self.settings_on_screen = True
-
-    def animate_backwards(self):
-        if self.pos > self.end_pos:
-            self.pos -= 0.035
-            self.settings_frame.place(relx=0, rely=self.pos, anchor='sw')
-            self.settings_button.lift()
-            self.after(15, self.animate_backwards)
-        else:
-            self.animation_started = False
-            self.settings_on_screen = False
-
     def run_snipping_tool(self):
         current_debug_win = self.get_current_debug_win()
         self.snipping_tool.change_debug_win_instance(current_debug_win)
         self.snipping_tool.display_snipping_tool()
-    
+
     def _change_geometry_to_center(self):
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-        
+
         x_coordinate = int((screen_width / 2) - (670 / 2))
         y_coordinate = int((screen_height / 2) - (300 / 2))
-        
+
         self.geometry(f'+{x_coordinate}+{y_coordinate}')
 
     def _create_system_tray_icon(self):
@@ -118,7 +94,7 @@ class Gui(ctk.CTk):
 
         self.settings_button = tk.Button(
             image=self.settings_im,
-            command=self.animate,
+            command=lambda: self.animated_widget.animate(),
             borderwidth=0,
             highlightthickness=0,
             disabledforeground='#262834',
@@ -133,19 +109,19 @@ class Gui(ctk.CTk):
             '<Enter>', self.settings_button, self.settings_im_dark
         )
         self.bind_button('<Leave>', self.settings_button, self.settings_im)
-    
+
     def _place_mode_buttons(self):
         self.mode_var = ctk.StringVar(self, 'translation')
         translator_mode_button = create_stylish_button(
             self, 'Перевод', lambda: self.change_mode_var('translation')
         )
         translator_mode_button.place(relx=0.073, rely=0.353)
-        
+
         dict_mode_button = create_stylish_button(
             self, 'Словарь', lambda: self.change_mode_var('dict')
         )
         dict_mode_button.place(relx=0.389, rely=0.353)
-        
+
         decrypt_mode_button = create_stylish_button(
             self, 'Decrypt', lambda: self.change_mode_var('decrypt')
         )
