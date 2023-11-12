@@ -24,11 +24,6 @@ class Gui(ctk.CTk):
 
         self.mode_var = None
         self.use_debug_win = False
-        self.animation_started = False
-        self.settings_on_screen = False
-        self.pos = 0
-        self.start_pos = 1
-        self.end_pos = 0
 
         super().__init__(fg_color="#262834")
         self.title('OCR Helper')
