@@ -1,3 +1,4 @@
+import os
 import tkinter as tk
 
 from PIL import Image, ImageTk
@@ -60,3 +61,9 @@ def open_tk_img(path_to_image: str):
     image = Image.open(path_to_image)
     image_tk = ImageTk.PhotoImage(image, size=(96, 96))
     return image_tk
+
+
+def check_path(path):
+    if os.path.basename(__file__).rsplit('.', maxsplit=1)[-1] != 'py':
+        return f'ocrhelper/{path}'
+    return f'../{path}'

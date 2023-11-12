@@ -11,6 +11,7 @@ from ocrhelper.ocr import TextRecognition
 from ocrhelper.gui import Gui
 from ocrhelper.translation_window import TranslationWindow
 from ocrhelper.components.translation import translation
+from ocrhelper.components.utils import check_path
 
 
 class App:
@@ -22,7 +23,7 @@ class App:
         self.languages = None
         self.use_gpt_stream = False
 
-        with open('../additional files/config.json') as config_file:
+        with open(check_path('additional files/config.json')) as config_file:
             self.config = json.load(config_file)
 
         self.gui = Gui(
@@ -31,7 +32,7 @@ class App:
 
         # load font if it is not installed in the system
         if 'Rubik' not in tk.font.families():
-            Font(file="Rubik.ttf")
+            Font(file=check_path("additional files/Rubik.ttf"))
 
         self.gui.after(15, self.easyocr_first_time_load)
         # run gui
@@ -47,7 +48,7 @@ class App:
         self.languages = self.config['recognition_languages']
         self.load_easyocr_model()
 
-        img = Image.open('../additional files/load_easyocr.png')
+        img = Image.open(check_path('additional files/load_easyocr.png'))
         self.easyocr_model.readtext(numpy.array(img))
 
         self.gui.load_ocr_toast.hide_toast_immediately()

@@ -10,6 +10,7 @@ from pystray import MenuItem as item
 import customtkinter as ctk
 from ocrhelper.components.utils import bind_button_with_img, open_tk_img
 from ocrhelper.components.utils import create_stylish_button
+from ocrhelper.components.utils import check_path
 from ocrhelper.gui_parts.animation import AnimateWidget
 from ocrhelper.gui_parts.debug_window import DebugWindow, DebugWindowNullObject
 from ocrhelper.gui_parts.gui_settings import SettingsFrame
@@ -29,7 +30,7 @@ class Gui(ctk.CTk):
         super().__init__(fg_color="#262834")
         self.title('OCR Helper')
         self.geometry("670x300")
-        self.iconbitmap(r'../assets/icon.ico')
+        self.iconbitmap(check_path(r'assets/icon.ico'))
         self.withdraw()
 
         self._change_geometry_to_center()
@@ -59,7 +60,7 @@ class Gui(ctk.CTk):
         self.geometry(f'+{x_coordinate}+{y_coordinate}')
 
     def _create_system_tray_icon(self):
-        image = Image.open(r'../assets\icon.ico')
+        image = Image.open(check_path(r'assets/icon.ico'))
         menu = (
             item('Open menu', self.show_window, default=True),
             item('Exit', self.quit_window),
@@ -70,8 +71,10 @@ class Gui(ctk.CTk):
         self.protocol('WM_DELETE_WINDOW', lambda: self.withdraw())
 
     def _place_settings_button(self):
-        self.settings_im = open_tk_img('../assets/settings.png')
-        self.settings_im_dark = open_tk_img('../assets/settings dark.png')
+        self.settings_im = open_tk_img(check_path('assets/settings.png'))
+        self.settings_im_dark = open_tk_img(
+            check_path('assets/settings dark.png')
+        )
 
         self.settings_button = tk.Button(
             image=self.settings_im,
@@ -177,7 +180,7 @@ class Gui(ctk.CTk):
         self.config['rect_color'] = self.get_rect_color()
         self.config.update(self.get_option_window_values())
 
-        with open('../additional files/config.json', 'w') as config:
+        with open(check_path('additional files/config.json'), 'w') as config:
             config.write(json.dumps(self.config))
 
         self.debug_window.window.destroy()

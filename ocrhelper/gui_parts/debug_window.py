@@ -3,12 +3,13 @@ import tkinter as tk
 from PIL import Image as im
 from PIL import ImageTk
 
+from ocrhelper.components.utils import check_path
+
 
 class DebugWindow:
     def __init__(self, master):
         self.master = master
         self.window = tk.Toplevel(master)
-        # self.window.geometry('1x1+0+0')
         self.window.withdraw()
         self.window.update()
         self.window.geometry('+0+0')
@@ -18,13 +19,13 @@ class DebugWindow:
         frame = tk.Frame(self.window, width=300, height=200)
         frame.pack()
 
-        # add label status
-        img = ImageTk.PhotoImage(im.open(r'../assets/debug_label.png'))
+        img = ImageTk.PhotoImage(
+            im.open(check_path(r'assets/debug_label.png'))
+        )
         label = tk.Label(frame, image=img, background='white')
         label.image = img
         label.pack(expand=True, fill='x')
 
-        # add text area for status notifications
         self.text_area = tk.Text(
             frame,
             width=30,
