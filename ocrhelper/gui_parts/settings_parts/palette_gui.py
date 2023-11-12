@@ -8,11 +8,12 @@ from ocrhelper.components.utils import check_path
 
 
 class PaletteFrame(ctk.CTkFrame):
-    def __init__(self, settings, rect_color):
-        self.rect_color = rect_color
+    def __init__(self, settings_frame, config):
+        self.config = config
+        self.rect_color = config['rect_color']
 
         super().__init__(
-            settings,
+            settings_frame,
             bg_color='#262834',
             fg_color='#202020',
             width=342,
@@ -21,7 +22,7 @@ class PaletteFrame(ctk.CTkFrame):
 
         self.rect_color_default = '#b800cf'
         self.rect_color_def_rgb = (184, 0, 207)
-        self.rect_color_rgb = ImageColor.getcolor(rect_color, "RGB")
+        self.rect_color_rgb = ImageColor.getcolor(self.rect_color, "RGB")
 
         self.red_var, self.red_slider = self._place_red_widgets()
         self.green_var, self.green_slider = self._place_green_widgets()
@@ -33,7 +34,9 @@ class PaletteFrame(ctk.CTkFrame):
         self._place_change_button()
 
     def _place_hex_label_and_entry(self):
-        hex_label = ctk.CTkLabel(self, text='HEX :', font=("Rubik bold", 15))
+        hex_label = ctk.CTkLabel(
+            self, text='HEX :', font=(f'{self.config["font"]} bold', 15)
+        )
         hex_label.place(relx=0.285, rely=0.15, anchor='center')
 
         self.hex_var = ctk.StringVar(self, self.rect_color)
@@ -127,18 +130,22 @@ class PaletteFrame(ctk.CTkFrame):
         self.bind_button('<Leave>', self.change_button, self.change_im)
 
     def create_color_labels_and_slider(self, color_name: str, color, start_v):
+        if self.config['font'] == 'Consolas':
+            fontsize = 17
+        else:
+            fontsize = 15
         color_label = ctk.CTkLabel(
             self,
             text=color_name,
             text_color=color,
-            font=("Rubik bold", 15),
+            font=(f'{self.config["font"]} bold', fontsize),
         )
 
         color_var = ctk.IntVar(self, start_v)
         color_label_value = ctk.CTkLabel(
             self,
             text_color=color,
-            font=("Rubik", 15),
+            font=(self.config['font'], 15),
             textvariable=color_var,
         )
 

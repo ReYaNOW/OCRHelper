@@ -9,7 +9,6 @@ from pystray import MenuItem as item
 
 import customtkinter as ctk
 from ocrhelper.components.utils import bind_button_with_img, open_tk_img
-from ocrhelper.components.utils import create_stylish_button
 from ocrhelper.components.utils import check_path
 from ocrhelper.gui_parts.animation import AnimateWidget
 from ocrhelper.gui_parts.debug_window import DebugWindow, DebugWindowNullObject
@@ -21,6 +20,7 @@ from ocrhelper.gui_parts.toast import ToastNotification
 class Gui(ctk.CTk):
     def __init__(self, config, snip_trigger, load_ocr: Callable):
         self.config = config
+        self.font = config['font']
         self.snip_trigger = snip_trigger
         self.load_ocr = load_ocr
 
@@ -32,6 +32,9 @@ class Gui(ctk.CTk):
         self.geometry("670x300")
         self.iconbitmap(check_path(r'assets/icon.ico'))
         self.withdraw()
+
+        if 'Rubik' not in tk.font.families():
+            config['font'] = 'Consolas'
 
         self._change_geometry_to_center()
         self._create_system_tray_icon()
@@ -96,19 +99,13 @@ class Gui(ctk.CTk):
 
     def _place_mode_buttons(self):
         self.mode_var = ctk.StringVar(self, 'translation')
-        translator_mode_button = create_stylish_button(
-            self, 'Перевод', lambda: self.change_mode_var('translation')
-        )
-        translator_mode_button.place(relx=0.073, rely=0.353)
+        transl_mode_button = self.create_mode_button('Перевод')
+        transl_mode_button.place(relx=0.073, rely=0.353)
 
-        dict_mode_button = create_stylish_button(
-            self, 'Словарь', lambda: self.change_mode_var('dict')
-        )
+        dict_mode_button = self.create_mode_button('Словарь')
         dict_mode_button.place(relx=0.389, rely=0.353)
-
-        decrypt_mode_button = create_stylish_button(
-            self, 'Decrypt', lambda: self.change_mode_var('decrypt')
-        )
+        
+        decrypt_mode_button = self.create_mode_button('Decrypt')
         decrypt_mode_button.place(relx=0.705, rely=0.353)
 
     def _create_toast_notifications(self):
@@ -154,11 +151,19 @@ class Gui(ctk.CTk):
         else:
             return self.debug_window_null
 
-    def create_mode_button(self, text, mode):
+    def create_mode_button(self, text):
+        match text:
+            case 'Перевод':
+                mode = 'translation'
+            case 'Словарь':
+                mode = 'dict'
+            case _:
+                mode = 'decrypt'
+
         return ctk.CTkButton(
             self,
             command=lambda: self.change_mode_var(mode),
-            font=('Rubik bold', 20),
+            font=(f'{self.config["font"]} bold', 20),
             text=text,
             fg_color='#5429FE',
             hover_color='#4a1e9e',
@@ -179,6 +184,7 @@ class Gui(ctk.CTk):
         self.config['translator'] = self.get_selected_translator()
         self.config['rect_color'] = self.get_rect_color()
         self.config.update(self.get_option_window_values())
+        self.config['font'] = 'Rubik'
 
         with open(check_path('additional files/config.json'), 'w') as config:
             config.write(json.dumps(self.config))

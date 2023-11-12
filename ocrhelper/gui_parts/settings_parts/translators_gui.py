@@ -2,7 +2,9 @@ import customtkinter as ctk
 
 
 class TranslatorsFrame(ctk.CTkFrame):
-    def __init__(self, settings_frame, default_transl):
+    def __init__(self, settings_frame, config):
+        self.config = config
+        default_transl = config['translator']
         super().__init__(
             settings_frame,
             bg_color='#262834',
@@ -15,7 +17,7 @@ class TranslatorsFrame(ctk.CTkFrame):
             self,
             text='Переводчик',
             fg_color="#5429FE",
-            font=("Rubik bold", 19),
+            font=(f"{self.config['font']} bold", 19),
             corner_radius=20,
         )
         translator_label.place(relx=0.5, rely=0.23, anchor='center')
@@ -25,7 +27,7 @@ class TranslatorsFrame(ctk.CTkFrame):
             self,
             values=["Google", "GPT", 'GPT Stream'],
             variable=self.translator_var,
-            font=("Rubik", 17),
+            font=(self.config['font'], 17),
             selected_color="#5429FE",
             selected_hover_color="#4a1e9e",
         )

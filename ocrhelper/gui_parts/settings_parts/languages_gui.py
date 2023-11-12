@@ -22,7 +22,7 @@ class LanguagesFrame(ctk.CTkFrame):
             self,
             text="Языки для распознавания",
             fg_color="#5429FE",
-            font=("Rubik bold", 19),
+            font=(f'{self.config["font"]} bold', 19),
             corner_radius=20,
         )
         languages_label.place(relx=0.5, rely=0.23, anchor='center')
@@ -35,10 +35,12 @@ class LanguagesFrame(ctk.CTkFrame):
 
         self.jap_var, jap_option = self.create_lang_option('JAP')
         jap_option.place(relx=0.80, rely=0.525, anchor='center')
-
+        
+        print(self.config['font'])
         change_button = create_stylish_button(
             self,
             text='Сменить',
+            font=f'{self.config["font"]} bold',
             fontsize=16,
             command=self.press_load_ocr_btn,
             width=65,
@@ -63,7 +65,7 @@ class LanguagesFrame(ctk.CTkFrame):
             fg_color='#5429FE',
             hover_color='#4a1e9e',
             text=language,
-            font=("Rubik", 16),
+            font=(f'{self.config["font"]}', 16),
             variable=lang_var,
             onvalue=language,
             offvalue='',

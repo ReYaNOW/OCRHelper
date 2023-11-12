@@ -9,8 +9,8 @@ import customtkinter as ctk
 def create_stylish_button(
     master,
     text,
+    font,
     command=None,
-    font=None,
     fontsize=None,
     fg_color=None,
     hover_color=None,
@@ -18,10 +18,10 @@ def create_stylish_button(
     height=None,
     corner_radius=None,
 ):
-    if font is None:
-        font = 'Rubik bold'
     if fontsize is None:
         fontsize = 20
+    if font == 'Consolas' or font == 'Consolas bold':
+        fontsize *= 1.15
     if fg_color is None:
         fg_color = '#5429FE'
     if hover_color is None:

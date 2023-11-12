@@ -33,16 +33,16 @@ class OptionsWindow(ctk.CTkToplevel):
 
         self.clipboard_frame = OptionsFrame(
             frame,
-            'Добавлять распознанный',
-            'текст в буфер обмена',
+            config['font'],
+            ('Добавлять распознанный', 'текст в буфер обмена'),
             var_value=self.config['need_copy_to_clipboard'],
         )
         self.clipboard_frame.place(relx=0.5, rely=0.1875, anchor='center')
 
         self.debug_frame = OptionsFrame(
             frame,
-            'Использовать debug',
-            'окно',
+            self.config['font'],
+            ('Использовать debug', 'окно'),
             var_value=self.config['use_debug_window'],
         )
         self.debug_frame.place(relx=0.5, rely=0.54, anchor='center')
@@ -50,6 +50,7 @@ class OptionsWindow(ctk.CTkToplevel):
         save_button = create_stylish_button(
             frame,
             text='Сохранить',
+            font=self.config['font'],
             fontsize=16,
             command=self.withdraw,
             height=45,
@@ -64,7 +65,8 @@ class OptionsWindow(ctk.CTkToplevel):
 
 
 class OptionsFrame(ctk.CTkFrame):
-    def __init__(self, settings: ctk.CTkFrame, text1, text2, var_value):
+    def __init__(self, settings: ctk.CTkFrame, font, texts, var_value):
+        text1, text2 = texts
         super().__init__(
             settings,
             bg_color='#262834',
@@ -77,7 +79,7 @@ class OptionsFrame(ctk.CTkFrame):
         label = ctk.CTkLabel(
             self,
             text=text1,
-            font=("Rubik", 18),
+            font=(font, 18),
             cursor='hand2',
         )
         label.place(relx=0.5, rely=0.35, anchor='center')
@@ -85,7 +87,7 @@ class OptionsFrame(ctk.CTkFrame):
         self.var = ctk.BooleanVar(self, var_value)
         self.checkbox = ctk.CTkCheckBox(
             self,
-            font=("Rubik", 18),
+            font=(font, 18),
             text=text2,
             fg_color='#5429FE',
             hover_color='#4a1e9e',

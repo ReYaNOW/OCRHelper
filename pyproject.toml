@@ -14,7 +14,6 @@ pystray = "^0.19.4"
 keyboard = "^0.13.5"
 pillow = "9.5.0"
 numpy = "^1.25.1"
-tkextrafont = "^0.6.3"
 pyperclip = "^1.8.2"
 
 [tool.poetry.group.dev.dependencies]

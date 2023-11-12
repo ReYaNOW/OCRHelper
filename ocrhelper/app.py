@@ -12,6 +12,7 @@ from ocrhelper.gui import Gui
 from ocrhelper.translation_window import TranslationWindow
 from ocrhelper.components.translation import translation
 from ocrhelper.components.utils import check_path
+from ocrhelper.components import utils
 
 
 class App:
@@ -31,8 +32,6 @@ class App:
         )
 
         # load font if it is not installed in the system
-        if 'Rubik' not in tk.font.families():
-            Font(file=check_path("additional files/Rubik.ttf"))
 
         self.gui.after(15, self.easyocr_first_time_load)
         # run gui

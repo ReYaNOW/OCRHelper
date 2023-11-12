@@ -325,17 +325,6 @@ docx = ["docx2txt (>=0.8,<0.9)"]
 pdf = ["pypdf (>=3.3.0,<4.0.0)"]
 
 [[package]]
-name = "distro"
-version = "1.8.0"
-description = "Distro - an OS platform information API"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "distro-1.8.0-py3-none-any.whl", hash = "sha256:99522ca3e365cac527b44bde033f64c6945d90eb9f769703caaec52b09bbd3ff"},
-    {file = "distro-1.8.0.tar.gz", hash = "sha256:02e111d1dc6a50abb8eed6bf31c3e48ed8b0830d1ea2a1b78c61765c2513fdd8"},
-]
-
-[[package]]
 name = "flake8"
 version = "6.0.0"
 description = "the modular source code checker: pep8 pyflakes and co"
@@ -3544,45 +3533,6 @@ socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
-name = "scikit-build"
-version = "0.17.6"
-description = "Improved build system generator for Python C/C++/Fortran/Cython extensions"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "scikit_build-0.17.6-py3-none-any.whl", hash = "sha256:18bd55e81841106eec93f30a297df4f301003791c41be46ef6428d58bd42d6b3"},
-    {file = "scikit_build-0.17.6.tar.gz", hash = "sha256:b51a51a36b37c42650994b5047912f59b22e3210b23e321f287611f9ef6e5c9d"},
-]
-
-[package.dependencies]
-distro = "*"
-packaging = "*"
-setuptools = ">=42.0.0"
-wheel = ">=0.32.0"
-
-[package.extras]
-cov = ["coverage[toml] (>=4.2)", "pytest-cov (>=2.7.1)"]
-docs = ["pygments", "sphinx (>=4)", "sphinx-issues", "sphinx-rtd-theme (>=1.0)", "sphinxcontrib-moderncmakedomain (>=3.19)"]
-doctest = ["ubelt (>=0.8.2)", "xdoctest (>=0.10.0)"]
-test = ["build (>=0.7)", "cython (>=0.25.1)", "importlib-metadata", "pytest (>=6.0.0)", "pytest-mock (>=1.10.4)", "requests", "virtualenv"]
-
-[[package]]
-name = "setuptools"
-version = "68.2.2"
-description = "Easily download, build, install, upgrade, and uninstall Python packages"
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "setuptools-68.2.2-py3-none-any.whl", hash = "sha256:b454a35605876da60632df1a60f736524eb73cc47bbc9f3f1ef1b644de74fd2a"},
-    {file = "setuptools-68.2.2.tar.gz", hash = "sha256:4ac1475276d2f1c48684874089fefcd83bd7162ddaafb81fac866ba0db282a87"},
-]
-
-[package.extras]
-docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "pygments-github-lexers (==0.0.5)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-favicon", "sphinx-hoverxref (<2)", "sphinx-inline-tabs", "sphinx-lint", "sphinx-notfound-page (>=1,<2)", "sphinx-reredirects", "sphinxcontrib-towncrier"]
-testing = ["build[virtualenv]", "filelock (>=3.4.0)", "flake8-2020", "ini2toml[lite] (>=0.9)", "jaraco.develop (>=7.21)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "pip (>=19.1)", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-mypy (>=0.9.1)", "pytest-perf", "pytest-ruff", "pytest-timeout", "pytest-xdist", "tomli-w (>=1.0.0)", "virtualenv (>=13.0.0)", "wheel"]
-testing-integration = ["build[virtualenv] (>=1.0.3)", "filelock (>=3.4.0)", "jaraco.envs (>=2.2)", "jaraco.path (>=3.2.0)", "packaging (>=23.1)", "pytest", "pytest-enabler", "pytest-xdist", "tomli", "virtualenv (>=13.0.0)", "wheel"]
-
-[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -3603,23 +3553,6 @@ files = [
     {file = "soupsieve-2.4.1-py3-none-any.whl", hash = "sha256:1c1bfee6819544a3447586c889157365a27e10d88cde3ad3da0cf0ddf646feb8"},
     {file = "soupsieve-2.4.1.tar.gz", hash = "sha256:89d12b2d5dfcd2c9e8c22326da9d9aa9cb3dfab0a83a024f05704076ee8d35ea"},
 ]
-
-[[package]]
-name = "tkextrafont"
-version = "0.6.3"
-description = "Fonts loader for Tkinter"
-optional = false
-python-versions = "*"
-files = [
-    {file = "tkextrafont-0.6.3-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6d1c9829a8e578837f814494f952e7ad3715869303ccd1133791183ef1aa6671"},
-    {file = "tkextrafont-0.6.3-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7bf75e028dddda7f329d6d90115e77c84ed47f76dcba914745b1bce9a30b45c8"},
-    {file = "tkextrafont-0.6.3-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:639f5baf05298b0d98b7209fef561c1961ed99adb9abe65eceaa2212d3ccb5fe"},
-    {file = "tkextrafont-0.6.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5f73d9abd0c7f2fdb9a42e9a5c057f5a6125ed2d2b2df30de47832422f3b79c6"},
-    {file = "tkextrafont-0.6.3-py3-none-win_amd64.whl", hash = "sha256:f139af112a941058aea9c5c57f886d7e0120d4654f79c162be24dea1ea545659"},
-]
-
-[package.dependencies]
-scikit-build = "*"
 
 [[package]]
 name = "tqdm"
@@ -3657,20 +3590,6 @@ brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
 secure = ["certifi", "cryptography (>=1.9)", "idna (>=2.0.0)", "pyopenssl (>=17.1.0)", "urllib3-secure-extra"]
 socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
-
-[[package]]
-name = "wheel"
-version = "0.41.2"
-description = "A built-package format for Python"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "wheel-0.41.2-py3-none-any.whl", hash = "sha256:75909db2664838d015e3d9139004ee16711748a52c8f336b52882266540215d8"},
-    {file = "wheel-0.41.2.tar.gz", hash = "sha256:0c5ac5ff2afb79ac23ab82bab027a0be7b5dbcf2e54dc50efe4bf507de1f7985"},
-]
-
-[package.extras]
-test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 
 [[package]]
 name = "win32-setctime"
@@ -3776,4 +3695,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "e474c9671bc18057e15b5080a4ed59d4b8ed5d48e91a3eb3b5b8ebd45fa10bed"
+content-hash = "3efa90177639eed5fd6e7f0e2ee5d439af6868001dc175d0f0a26d0b9a74c28a"
