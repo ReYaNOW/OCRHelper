@@ -1,18 +1,15 @@
 import json
-import tkinter as tk
 
 import numpy
 import pyperclip
 from PIL import Image
 from loguru import logger
-from tkextrafont import Font
 
-from ocrhelper.ocr import TextRecognition
-from ocrhelper.gui import Gui
-from ocrhelper.translation_window import TranslationWindow
 from ocrhelper.components.translation import translation
 from ocrhelper.components.utils import check_path
-from ocrhelper.components import utils
+from ocrhelper.gui import Gui
+from ocrhelper.ocr import TextRecognition
+from ocrhelper.translation_window import TranslationWindow
 
 
 class App:

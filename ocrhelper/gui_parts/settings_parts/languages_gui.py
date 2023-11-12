@@ -36,7 +36,6 @@ class LanguagesFrame(ctk.CTkFrame):
         self.jap_var, jap_option = self.create_lang_option('JAP')
         jap_option.place(relx=0.80, rely=0.525, anchor='center')
         
-        print(self.config['font'])
         change_button = create_stylish_button(
             self,
             text='Сменить',

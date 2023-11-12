@@ -49,7 +49,7 @@ class OptionsWindow(ctk.CTkToplevel):
 
         save_button = create_stylish_button(
             frame,
-            text='Сохранить',
+            text='Ok',
             font=self.config['font'],
             fontsize=16,
             command=self.withdraw,
