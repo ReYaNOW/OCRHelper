@@ -131,8 +131,8 @@ class Gui(ctk.CTk):
         self.snipping_tool = SnippingTool(self, additional_methods)
 
     def _add_keyboard_binds(self):
-        keyboard.add_hotkey('ctrl + shift + x', callback=self.deiconify)
-        keyboard.add_hotkey('alt + x', callback=self.run_snipping_tool)
+        keyboard.add_hotkey('ctrl + alt + x', callback=self.deiconify)
+        keyboard.add_hotkey('ctrl + shift + x', callback=self.run_snipping_tool)
 
     def run_snipping_tool(self):
         current_debug_win = self.get_current_debug_win()

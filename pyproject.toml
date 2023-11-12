@@ -8,15 +8,14 @@ packages = [{include = "ocrhelper"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pillow = "9.5.0"
-numpy = "^1.25.1"
+customtkinter = "^5.2.1"
 deep-translator = {extras = ["ai"], version = "^1.11.4"}
 pystray = "^0.19.4"
 keyboard = "^0.13.5"
-pyclip = "^0.7.0"
-pandas = "^2.1.0"
+pillow = "9.5.0"
+numpy = "^1.25.1"
 tkextrafont = "^0.6.3"
-customtkinter = "^5.2.1"
+pyperclip = "^1.8.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.0"
