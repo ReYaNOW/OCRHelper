@@ -1,6 +1,8 @@
 import os
 import tkinter as tk
+from random import randint
 
+import openai
 from PIL import Image, ImageTk
 
 import customtkinter as ctk
@@ -31,7 +33,7 @@ def create_stylish_button(
     if height is None:
         height = 89
     if corner_radius is None:
-        corner_radius = 20
+        corner_radius = 12
     return ctk.CTkButton(
         master=master,
         command=command,
@@ -67,3 +69,15 @@ def check_path(path):
     if os.path.basename(__file__).rsplit('.', maxsplit=1)[-1] != 'py':
         return f'ocrhelper/{path}'
     return f'../{path}'
+
+
+def validate_key(key):
+    try:
+        openai.ChatCompletion.create(
+            model='gpt-3.5-turbo-1106',
+            messages=[{'role': 'user', 'content': f'write {randint(1, 100)}'}],
+            api_key=key,
+        )
+        return True
+    except openai.error.AuthenticationError:
+        return False

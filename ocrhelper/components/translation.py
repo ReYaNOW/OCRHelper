@@ -1,11 +1,7 @@
-import os
-
 import openai
 from deep_translator import GoogleTranslator
 from loguru import logger
-
-api_key = os.getenv('GPT_API_KEY')
-openai.api_key = api_key
+import keyring
 
 
 def translation(text, from_lang, to_lang, translator='Google Translator'):
@@ -45,6 +41,7 @@ def gpt_request(text, from_lang, to_lang, use_stream=False):
         model='gpt-3.5-turbo-1106',
         messages=[{'role': 'user', 'content': request}],
         stream=use_stream,
+        api_key=keyring.get_password("system", "GPT_API_KEY"),
     )
     if use_stream:
         return response

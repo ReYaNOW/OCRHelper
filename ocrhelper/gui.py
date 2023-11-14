@@ -30,13 +30,15 @@ class Gui(ctk.CTk):
         super().__init__(fg_color="#262834")
         self.title('OCR Helper')
         self.geometry("670x300")
+        
         self.iconbitmap(check_path(r'assets/icon.ico'))
+        self.resizable(False, False)
         self.withdraw()
 
         if 'Rubik' not in tk.font.families():
             config['font'] = 'Consolas'
 
-        self._change_geometry_to_center()
+        self.change_geometry_to_center()
         self._create_system_tray_icon()
         self._create_toast_notifications()
         self._place_mode_buttons()
@@ -53,15 +55,6 @@ class Gui(ctk.CTk):
         self._create_snipping_tool()
         self._add_keyboard_binds()
 
-    def _change_geometry_to_center(self):
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-
-        x_coordinate = int((screen_width / 2) - (670 / 2))
-        y_coordinate = int((screen_height / 2) - (300 / 2))
-
-        self.geometry(f'+{x_coordinate}+{y_coordinate}')
-
     def _create_system_tray_icon(self):
         image = Image.open(check_path(r'assets/icon.ico'))
         menu = (
@@ -71,7 +64,7 @@ class Gui(ctk.CTk):
 
         tray_icon = pystray.Icon('OCRHelper', image, 'OCRHelper', menu)
         tray_icon.run_detached()
-        self.protocol('WM_DELETE_WINDOW', lambda: self.withdraw())
+        self.protocol('WM_DELETE_WINDOW', self.withdraw)
 
     def _place_settings_button(self):
         self.settings_im = open_tk_img(check_path('assets/settings.png'))
@@ -104,7 +97,7 @@ class Gui(ctk.CTk):
 
         dict_mode_button = self.create_mode_button('Словарь')
         dict_mode_button.place(relx=0.389, rely=0.353)
-        
+
         decrypt_mode_button = self.create_mode_button('Decrypt')
         decrypt_mode_button.place(relx=0.705, rely=0.353)
 
@@ -131,10 +124,19 @@ class Gui(ctk.CTk):
         self.snipping_tool = SnippingTool(self, additional_methods)
 
     def _add_keyboard_binds(self):
-        keyboard.add_hotkey('ctrl + alt + x', callback=self.deiconify)
+        keyboard.add_hotkey('ctrl + alt + x', callback=self.show_window)
         keyboard.add_hotkey(
             'ctrl + shift + x', callback=self.run_snipping_tool
         )
+
+    def change_geometry_to_center(self):
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+
+        x_coordinate = int((screen_width / 2) - (670 / 2))
+        y_coordinate = int((screen_height / 2) - (300 / 2))
+
+        self.geometry(f'+{x_coordinate}+{y_coordinate}')
 
     def run_snipping_tool(self):
         current_debug_win = self.get_current_debug_win()
@@ -176,8 +178,10 @@ class Gui(ctk.CTk):
         self.mode_var = mode
 
     def show_window(self):
+        self.change_geometry_to_center()
         self.iconify()
-        self.deiconify()
+        self.update()
+        self.after(15, self.deiconify)
 
     def quit_window(self, tray_icon):
         self.config['recognition_languages'] = self.get_selected_languages()

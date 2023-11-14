@@ -8,6 +8,7 @@ from ocrhelper.gui_parts.settings_parts.languages_gui import LanguagesFrame
 from ocrhelper.gui_parts.settings_parts.options_gui import OptionsWindow
 from ocrhelper.gui_parts.settings_parts.palette_gui import PaletteFrame
 from ocrhelper.gui_parts.settings_parts.translators_gui import TranslatorsFrame
+from ocrhelper.gui_parts.settings_parts.api_dialog_gui import ApiDialogWindow
 
 
 class SettingsFrame(ctk.CTkFrame):
@@ -24,13 +25,23 @@ class SettingsFrame(ctk.CTkFrame):
         self.addit_sett_button = create_stylish_button(
             self,
             text='Дополнительные настройки',
-            font=f"{self.config['font']} bold",
+            font=f"{self.config['font']}",
             fontsize=16,
-            command=self.open_option_window,
+            command=self.options_window.open_option_window,
             height=45,
         )
         self.addit_sett_button.place(relx=0.2375, rely=0.885, anchor='center')
-        self.additional_settings = ctk.CTkFrame(self)
+
+        self.api_window = ApiDialogWindow(self, config)
+        self.api_button = create_stylish_button(
+            self,
+            text='Ввести API-ключ',
+            font=f"{self.config['font']}",
+            fontsize=16,
+            command=self.api_window.open_dialog_window,
+            height=45,
+        )
+        self.api_button.place(relx=0.725, rely=0.885, anchor='center')
 
     def _place_lang_frame(self):
         languages_frame = LanguagesFrame(self, self.config, self.load_ocr)
@@ -48,7 +59,3 @@ class SettingsFrame(ctk.CTkFrame):
         self.palette_frame = PaletteFrame(self, self.config)
         self.palette_frame.place(relx=0.73, rely=0.406, anchor='center')
         self.get_rect_color = self.palette_frame.get_rect_color
-
-    def open_option_window(self):
-        self.options_window.update()
-        self.options_window.deiconify()

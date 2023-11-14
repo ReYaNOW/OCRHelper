@@ -1,46 +1,48 @@
 import customtkinter as ctk
 
 from ocrhelper.components.utils import create_stylish_button
+from ocrhelper.components.utils import check_path
 
 
-class OptionsWindow(ctk.CTkToplevel):
+class OptionsWindow:
     def __init__(self, settings_frame, config):
+        self.settings_frame = settings_frame
         self.config = config
-        super().__init__(
-            settings_frame, width=292, height=280, fg_color='#4a1e9e'
+
+        self.option_window = None
+        self.clipboard_frame = None
+        self.debug_frame = None
+
+        self.create_option_window()
+
+    def create_option_window(self):
+        self.option_window = ctk.CTkToplevel(
+            self.settings_frame, width=292, height=280, fg_color='#4a1e9e'
+        )
+        
+        # without this icon will not be set on ctk.CTKTopLevel
+        self.option_window.after(
+            200,
+            lambda: self.option_window.iconbitmap(
+                check_path(r'assets/icon.ico')
+            ),
         )
 
-        self.update_idletasks()
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-
-        x_coordinate = int((screen_width / 2) - (292 / 2))
-        y_coordinate = int((screen_height / 2) - (280 / 2))
-
-        self.geometry(f'+{x_coordinate}+{y_coordinate}')
-        self.overrideredirect(True)
-        self.withdraw()
-
-        frame = ctk.CTkFrame(
-            self,
-            width=292,
-            height=280,
-            fg_color='#262834',
-            border_width=5,
-            border_color='#4a1e9e',
-        )
-        frame.pack()
+        self.option_window.attributes("-topmost", True)
+        self.option_window.resizable(False, False)
+        self.option_window.protocol('WM_DELETE_WINDOW', self.close_window)
+        self.option_window.withdraw()
 
         self.clipboard_frame = OptionsFrame(
-            frame,
-            config['font'],
+            self.option_window,
+            self.config['font'],
             ('Добавлять распознанный', 'текст в буфер обмена'),
             var_value=self.config['need_copy_to_clipboard'],
         )
         self.clipboard_frame.place(relx=0.5, rely=0.1875, anchor='center')
 
         self.debug_frame = OptionsFrame(
-            frame,
+            self.option_window,
             self.config['font'],
             ('Использовать debug', 'окно'),
             var_value=self.config['use_debug_window'],
@@ -48,14 +50,24 @@ class OptionsWindow(ctk.CTkToplevel):
         self.debug_frame.place(relx=0.5, rely=0.54, anchor='center')
 
         save_button = create_stylish_button(
-            frame,
+            self.option_window,
             text='Ok',
             font=self.config['font'],
             fontsize=16,
-            command=self.withdraw,
+            command=self.close_window,
             height=45,
         )
         save_button.place(relx=0.5, rely=0.85, anchor='center')
+    
+    def open_option_window(self):
+        screen_width = self.settings_frame.winfo_screenwidth()
+        screen_height = self.settings_frame.winfo_screenheight()
+        x_coordinate = int((screen_width / 2) - (343 / 2))
+        y_coordinate = int((screen_height / 2) - (170 / 2))
+        
+        self.option_window.update_idletasks()
+        self.option_window.geometry(f'+{x_coordinate}+{y_coordinate}')
+        self.option_window.deiconify()
 
     def get_var_values(self):
         return {
@@ -63,9 +75,13 @@ class OptionsWindow(ctk.CTkToplevel):
             'use_debug_window': self.debug_frame.get_var_value(),
         }
 
+    def close_window(self):
+        self.option_window.destroy()
+        self.create_option_window()
+
 
 class OptionsFrame(ctk.CTkFrame):
-    def __init__(self, settings: ctk.CTkFrame, font, texts, var_value):
+    def __init__(self, settings: ctk.CTkToplevel, font, texts, var_value):
         text1, text2 = texts
         super().__init__(
             settings,

@@ -21,7 +21,6 @@ class LanguagesFrame(ctk.CTkFrame):
         languages_label = ctk.CTkLabel(
             self,
             text="Языки для распознавания",
-            fg_color="#5429FE",
             font=(f'{self.config["font"]} bold', 19),
             corner_radius=20,
         )
@@ -39,7 +38,7 @@ class LanguagesFrame(ctk.CTkFrame):
         change_button = create_stylish_button(
             self,
             text='Сменить',
-            font=f'{self.config["font"]} bold',
+            font=f'{self.config["font"]}',
             fontsize=16,
             command=self.press_load_ocr_btn,
             width=65,

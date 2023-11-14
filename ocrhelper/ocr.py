@@ -20,7 +20,7 @@ class TextRecognition:
 
     def recognition(self, image):
         text = self.easy_ocr(image)
-        self.messages('positive', text, 1)
+        self.messages(text)
         self.text = text
         return
 
@@ -36,29 +36,13 @@ class TextRecognition:
         )
         return ' '.join(result)
 
-    def messages(self, type_of_operation, text=None, conf=None, nextocr=None):
-        match type_of_operation:
-            case 'negative':
-                logger.warning(f'Не справился, conf={conf}')
-                logger.info(f'Результат = \'{text}\'')
-                logger.info(nextocr)
-
-                self.debug_window.add_message(
-                    f'{self.current_ocr} не справился\n', "orange"
-                )
-                self.debug_window.add_message(nextocr, 'white')
-            case 'positive':
-                logger.info(f'Справился, conf={conf}')
-                logger.info(f'Результат = \'{text}\'')
-
-                if nextocr == 'last':
-                    enter = ''
-                else:
-                    enter = '\n'
-
-                self.debug_window.add_message(
-                    'Текст успешно распознан\n', 'green', enter=enter
-                )
+    def messages(self, text=None):
+        logger.info(f'Результат = \'{text}\'')
+        enter = '\n'
+        
+        self.debug_window.add_message(
+            'Текст успешно распознан\n', 'green', enter=enter
+        )
 
     def get_text(self):
         return self.text

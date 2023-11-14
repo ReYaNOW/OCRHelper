@@ -1,1 +1,1 @@
-{"recognition_languages": ["en"], "translator": "Google", "font": "Rubik", "rect_color": "#b800cf", "need_copy_to_clipboard": false, "use_debug_window": false}
+{"recognition_languages": ["en"], "translator": "Google", "font": "Rubik", "rect_color": "#b800cf", "api_key_is_set": false, "need_copy_to_clipboard": false, "use_debug_window": false}

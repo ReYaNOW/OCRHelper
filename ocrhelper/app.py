@@ -28,8 +28,6 @@ class App:
             self.config, self.snip_trigger, self.load_easyocr_with_toast
         )
 
-        # load font if it is not installed in the system
-
         self.gui.after(15, self.easyocr_first_time_load)
         # run gui
         self.gui.mainloop()
@@ -52,14 +50,14 @@ class App:
 
     def load_easyocr_model(self):
         languages = self.languages
-        logger.info(f'Загрузка модели EasyOCR c ' f'{", ".join(languages)}')
 
+        logger.info(f'Загрузка модели EasyOCR c ' f'{", ".join(languages)}')
         self.easyocr_model = self.easyocr.Reader(languages)
         logger.success('Модель EasyOCR была успешно загружена')
 
     def load_easyocr_with_toast(self):
         """Load EasyOCR with some languages
-        if they are changed from previous load"""
+        if they are changed from a previous load"""
         new_languages = self.gui.get_selected_languages()
         if self.languages != new_languages:
             self.languages = new_languages
