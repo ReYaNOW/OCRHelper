@@ -33,12 +33,15 @@ def translation(text, from_lang, to_lang, translator='Google Translator'):
 
 
 def gpt_request(text, from_lang, to_lang, use_stream=False):
+    if from_lang == to_lang and not use_stream:
+        return text
+
     request = f'Please translate the user message from {from_lang} to\
      {to_lang}. Make the translation sound as natural as possible.\
-      In answer write only translation.\n\n {text}'
+      In answer write ONLY translation.\n\n {text}'
 
     response = openai.ChatCompletion.create(
-        model='gpt-3.5-turbo-1106',
+        model='gpt-3.5-turbo',
         messages=[{'role': 'user', 'content': request}],
         stream=use_stream,
         api_key=keyring.get_password("system", "GPT_API_KEY"),
@@ -50,11 +53,13 @@ def gpt_request(text, from_lang, to_lang, use_stream=False):
 
 def lang_convert(language):
     match language:
-        case 'eng':
+        case ['en']:
             return 'english'
-        case 'rus':
+        case ['ru']:
             return 'russian'
-        case 'eng+rus':
+        case ['en', 'ru']:
+            return 'english and russian'
+        case ['ru', 'en']:
             return 'english and russian'
         case _:
             return language

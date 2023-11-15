@@ -35,9 +35,6 @@ class TranslatorsFrame(ctk.CTkFrame):
         )
         translators_segmented_btn.place(relx=0.5, rely=0.683, anchor='center')
 
-    def get_selected_translator(self):
-        return self.translator_var.get()
-
     def check_value(self, _):
         if not self.config['api_key_is_set']:
             self.translator_var.set('Google')
@@ -50,4 +47,5 @@ class TranslatorsFrame(ctk.CTkFrame):
                 button_hover_color='#4a1e9e',
                 corner_radius=7,
             )
-            
+        else:
+            self.config['translator'] = self.translator_var.get()

@@ -34,7 +34,7 @@ class LanguagesFrame(ctk.CTkFrame):
 
         self.jap_var, jap_option = self.create_lang_option('JAP')
         jap_option.place(relx=0.80, rely=0.525, anchor='center')
-        
+
         change_button = create_stylish_button(
             self,
             text='Сменить',
@@ -59,7 +59,7 @@ class LanguagesFrame(ctk.CTkFrame):
         lang_var = ctk.StringVar(self, language)
         lang_option = ctk.CTkCheckBox(
             self,
-            command=self.validate_lang_var,
+            command=self.set_selected_languages,
             fg_color='#5429FE',
             hover_color='#4a1e9e',
             text=language,
@@ -72,14 +72,17 @@ class LanguagesFrame(ctk.CTkFrame):
             lang_var.set('')
         return lang_var, lang_option
 
-    def validate_lang_var(self):
-        if not self.get_selected_languages():
-            self.eng_var.set('ENG')
-
-    def get_selected_languages(self):
+    def set_selected_languages(self):
         languages = self.eng_var.get(), self.rus_var.get(), self.jap_var.get()
+
         # change to 2 char versions to work with EasyOCR
-        return [lang[:-1].lower() for lang in languages if lang != '']
+        validate_langs = [lan[:-1].lower() for lan in languages if lan != '']
+
+        if not validate_langs:
+            self.eng_var.set('ENG')
+            self.config['recognition_languages'] = ['en']
+        else:
+            self.config['recognition_languages'] = validate_langs
 
     def load_langs_from_config(self):
         for lang in self.config['recognition_languages']:

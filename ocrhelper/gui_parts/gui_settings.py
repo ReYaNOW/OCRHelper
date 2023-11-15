@@ -46,16 +46,12 @@ class SettingsFrame(ctk.CTkFrame):
     def _place_lang_frame(self):
         languages_frame = LanguagesFrame(self, self.config, self.load_ocr)
         languages_frame.place(relx=0.2375, rely=0.24, anchor='center')
-        self.get_selected_languages = languages_frame.get_selected_languages
 
     def _place_transl_frame(self):
         translators_frame = TranslatorsFrame(self, self.config)
         translators_frame.place(relx=0.2375, rely=0.638, anchor='center')
-        self.get_selected_translator = (
-            translators_frame.get_selected_translator
-        )
 
     def _place_palette_frame(self):
         self.palette_frame = PaletteFrame(self, self.config)
         self.palette_frame.place(relx=0.73, rely=0.406, anchor='center')
-        self.get_rect_color = self.palette_frame.get_rect_color
+

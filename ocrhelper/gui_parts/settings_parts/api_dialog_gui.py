@@ -23,6 +23,7 @@ class ApiDialogWindow:
     def create_dialog_window(self):
         self.dialog_window = ctk.CTkToplevel(self.settings_frame)
         self.dialog_window.title('OCRHelper')
+        self.dialog_window.geometry(f'343x170')
 
         # without this icon will not be set on ctk.CTKTopLevel
         self.dialog_window.after(
@@ -77,13 +78,13 @@ class ApiDialogWindow:
 
     def open_dialog_window(self):
         self.dialog_window.update_idletasks()
-        screen_width = self.settings_frame.winfo_screenwidth()
-        screen_height = self.settings_frame.winfo_screenheight()
+        screen_width = self.dialog_window.winfo_screenwidth()
+        screen_height = self.dialog_window.winfo_screenheight()
         
-        x_coordinate = int((screen_width / 2) - (670 / 2))
-        y_coordinate = int((screen_height / 2) - (300 / 2))
+        x_coordinate = int((screen_width / 2) - (343 / 2))
+        y_coordinate = int((screen_height / 2) - (170 / 2))
         
-        self.dialog_window.geometry(f'343x170+{x_coordinate}+{y_coordinate}')
+        self.dialog_window.geometry(f'{x_coordinate}+{y_coordinate}')
         self.dialog_window.deiconify()
         self.input_entry.focus_force()
 
@@ -98,6 +99,7 @@ class ApiDialogWindow:
         result = validate_key(key)
         if result is True:
             keyring.set_password("system", "GPT_API_KEY", key)
+            self.config['api_key_is_set'] = True
             self.dialog_label.configure(text='API-ключ сохранен')
             self.ok_btn_var.set('Закрыть')
         else:

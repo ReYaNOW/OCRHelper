@@ -16,6 +16,8 @@ from ocrhelper.gui_parts.gui_settings import SettingsFrame
 from ocrhelper.gui_parts.snip import SnippingTool
 from ocrhelper.gui_parts.toast import ToastNotification
 
+ctk.set_appearance_mode('dark')
+
 
 class Gui(ctk.CTk):
     def __init__(self, config, snip_trigger, load_ocr: Callable):
@@ -30,7 +32,7 @@ class Gui(ctk.CTk):
         super().__init__(fg_color="#262834")
         self.title('OCR Helper')
         self.geometry("670x300")
-        
+
         self.iconbitmap(check_path(r'assets/icon.ico'))
         self.resizable(False, False)
         self.withdraw()
@@ -119,7 +121,7 @@ class Gui(ctk.CTk):
             'gui_update': self.update,
             'snip_trigger': self.snip_trigger,
             'debug_window': self.debug_window_null,
-            'get_rect_color': self.get_rect_color,
+            'config': self.config,
         }
         self.snipping_tool = SnippingTool(self, additional_methods)
 
@@ -143,12 +145,8 @@ class Gui(ctk.CTk):
         self.snipping_tool.change_debug_win_instance(current_debug_win)
         self.snipping_tool.display_snipping_tool()
 
-    def get_option_window_values(self) -> dict:
-        return self.settings_frame.options_window.get_var_values()
-
     def get_current_debug_win(self):
-        option_val = self.get_option_window_values()
-        if option_val['use_debug_window'] is True:
+        if self.config['use_debug_window'] is True:
             return self.debug_window
         else:
             return self.debug_window_null
@@ -184,10 +182,6 @@ class Gui(ctk.CTk):
         self.after(15, self.deiconify)
 
     def quit_window(self, tray_icon):
-        self.config['recognition_languages'] = self.get_selected_languages()
-        self.config['translator'] = self.get_selected_translator()
-        self.config['rect_color'] = self.get_rect_color()
-        self.config.update(self.get_option_window_values())
         self.config['font'] = 'Rubik'
 
         with open(check_path('additional files/config.json'), 'w') as config:
@@ -200,12 +194,3 @@ class Gui(ctk.CTk):
 
         tray_icon.visible = False
         tray_icon.stop()
-
-    def get_selected_languages(self):
-        return self.settings_frame.get_selected_languages()
-
-    def get_selected_translator(self):
-        return self.settings_frame.get_selected_translator()
-
-    def get_rect_color(self):
-        return self.settings_frame.get_rect_color()

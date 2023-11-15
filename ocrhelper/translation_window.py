@@ -38,7 +38,7 @@ class TranslationWindow:
         self._pack_recognized_text()
         self._pack_translated_text()
 
-        if self.use_gpt_stream:
+        if not isinstance(self.translated_text, str):
             self.stream_loop()
 
     def _create_transl_window(self):
@@ -122,8 +122,11 @@ class TranslationWindow:
         for chunk in self.translated_text:
             sleep(0.07)
             delta: dict = chunk['choices'][0]['delta']
-            for char in delta.get('content', ''):
-                word = self.extend_stream_string(char, word)
+            try:
+                for char in delta['content']:
+                    word = self.extend_stream_string(char, word)
+            except KeyError:
+                break
 
     def extend_stream_string(self, char, word):
         if char.isalpha():

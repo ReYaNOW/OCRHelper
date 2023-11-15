@@ -164,7 +164,7 @@ class PaletteFrame(ctk.CTkFrame):
         r, g, b = self.red_var.get(), self.green_var.get(), self.blue_var.get()
         hex_color = f'#{r:02x}{g:02x}{b:02x}'
 
-        self.rect_color = hex_color
+        self.config['rect_color'] = hex_color
         self.example_canvas.itemconfigure(self.rect, outline=hex_color)
 
     def return_rect_color_to_default(self):
@@ -205,9 +205,6 @@ class PaletteFrame(ctk.CTkFrame):
             type_of_bind,
             lambda e: self.change_button_color(button, image),
         )
-
-    def get_rect_color(self):
-        return self.rect_color
 
     @staticmethod
     def change_button_color(button: tk.Button, image: ImageTk):

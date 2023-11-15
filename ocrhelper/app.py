@@ -58,7 +58,7 @@ class App:
     def load_easyocr_with_toast(self):
         """Load EasyOCR with some languages
         if they are changed from a previous load"""
-        new_languages = self.gui.get_selected_languages()
+        new_languages = self.config['recognition_languages']
         if self.languages != new_languages:
             self.languages = new_languages
 
@@ -83,7 +83,7 @@ class App:
             image, self.languages, self.easyocr_model, self.gui.debug_window
         ).get_text()
 
-        translator = self.gui.get_selected_translator()
+        translator = self.config['translator']
         self.gui.debug_window.add_message(
             f'Перевод при помощи —\n{translator}\n',
             color='white',
@@ -102,8 +102,7 @@ class App:
         if translator == 'GPT Stream':
             self.use_gpt_stream = True
 
-        # add recognized text to clipboard if checkbutton is selected
-        if self.gui.get_option_window_values()['need_copy_to_clipboard']:
+        if self.config['need_copy_to_clipboard']:
             pyperclip.copy(text)
 
         # put translated text on the screen in a new tkinter window

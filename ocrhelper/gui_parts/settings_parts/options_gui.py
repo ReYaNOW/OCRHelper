@@ -17,9 +17,9 @@ class OptionsWindow:
 
     def create_option_window(self):
         self.option_window = ctk.CTkToplevel(
-            self.settings_frame, width=292, height=280, fg_color='#4a1e9e'
+            self.settings_frame, width=292, height=280
         )
-        
+
         # without this icon will not be set on ctk.CTKTopLevel
         self.option_window.after(
             200,
@@ -35,17 +35,17 @@ class OptionsWindow:
 
         self.clipboard_frame = OptionsFrame(
             self.option_window,
-            self.config['font'],
+            self.config,
             ('Добавлять распознанный', 'текст в буфер обмена'),
-            var_value=self.config['need_copy_to_clipboard'],
+            type_='clipboard',
         )
         self.clipboard_frame.place(relx=0.5, rely=0.1875, anchor='center')
 
         self.debug_frame = OptionsFrame(
             self.option_window,
-            self.config['font'],
+            self.config,
             ('Использовать debug', 'окно'),
-            var_value=self.config['use_debug_window'],
+            type_='debug',
         )
         self.debug_frame.place(relx=0.5, rely=0.54, anchor='center')
 
@@ -58,22 +58,16 @@ class OptionsWindow:
             height=45,
         )
         save_button.place(relx=0.5, rely=0.85, anchor='center')
-    
+
     def open_option_window(self):
         screen_width = self.settings_frame.winfo_screenwidth()
         screen_height = self.settings_frame.winfo_screenheight()
         x_coordinate = int((screen_width / 2) - (343 / 2))
         y_coordinate = int((screen_height / 2) - (170 / 2))
-        
+
         self.option_window.update_idletasks()
         self.option_window.geometry(f'+{x_coordinate}+{y_coordinate}')
         self.option_window.deiconify()
-
-    def get_var_values(self):
-        return {
-            'need_copy_to_clipboard': self.clipboard_frame.get_var_value(),
-            'use_debug_window': self.debug_frame.get_var_value(),
-        }
 
     def close_window(self):
         self.option_window.destroy()
@@ -81,7 +75,10 @@ class OptionsWindow:
 
 
 class OptionsFrame(ctk.CTkFrame):
-    def __init__(self, settings: ctk.CTkToplevel, font, texts, var_value):
+    def __init__(self, settings: ctk.CTkToplevel, config, texts, type_):
+        self.config = config
+        self.type_ = type_
+        font = config['font']
         text1, text2 = texts
         super().__init__(
             settings,
@@ -100,11 +97,13 @@ class OptionsFrame(ctk.CTkFrame):
         )
         label.place(relx=0.5, rely=0.35, anchor='center')
 
+        var_value = self.config[self.get_config_key()]
         self.var = ctk.BooleanVar(self, var_value)
         self.checkbox = ctk.CTkCheckBox(
             self,
             font=(font, 18),
             text=text2,
+            command=self.change_val_in_config,
             fg_color='#5429FE',
             hover_color='#4a1e9e',
             variable=self.var,
@@ -120,8 +119,16 @@ class OptionsFrame(ctk.CTkFrame):
             else self.var.set(True),
         )
 
-    def get_var_value(self):
-        return self.var.get()
+    def get_config_key(self):
+        if self.type_ == 'clipboard':
+            return 'need_copy_to_clipboard'
+        else:
+            return 'use_debug_window'
+
+    def change_val_in_config(self):
+        key = self.get_config_key()
+        value = self.var.get()
+        self.config[key] = value
 
     def on_enter(self, _):
         self.checkbox._on_enter()  # noqa
