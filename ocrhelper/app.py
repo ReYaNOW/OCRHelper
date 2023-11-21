@@ -35,9 +35,11 @@ class App:
     def easyocr_first_time_load(self):
         self.gui.load_ocr_toast.show_toast()
         self.gui.update()
-
+        
+        logger.info(f'Импорт модуля EasyOCR')
         import easyocr
-
+        logger.success(f'Импорт EasyOCR прошел успешно')
+        
         self.easyocr = easyocr
         self.languages = self.config['recognition_languages']
         self.load_easyocr_model()
