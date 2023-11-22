@@ -14,7 +14,7 @@ jobs:
           debug: true
           directory: ./
           badge: ./output/badge.svg
-          patterns: '*.py'
+          ignore: 'node_modules/|README'
 
       - name: Print the output
         run: |
