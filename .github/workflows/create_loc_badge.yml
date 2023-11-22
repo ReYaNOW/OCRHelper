@@ -2,7 +2,6 @@ name: create_loc_badge
 
 on:
   - push
-  - pull_request
 
 jobs:
   build:
