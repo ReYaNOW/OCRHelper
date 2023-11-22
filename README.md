@@ -1,5 +1,5 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/f5372d1edda7c846d573/maintainability)](https://codeclimate.com/github/ReYaNOW/OCRHelper/maintainability)
-![Static Badge](https://img.shields.io/badge/1.8k-blue?label=total%20lines)
+![Static Badge](https://img.shields.io/badge/total_lines-1.8k-blue?color=%235429FE)
 
 
 <p align="center">
