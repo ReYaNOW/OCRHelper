@@ -8,3 +8,5 @@ install_without_cuda:
 update:
 	poetry update
 	pip install --upgrade torch torchvision easyocr
+loc_badge:
+	@git ls-files | grep '\.py' | xargs wc -l | grep -oE '[0-9]+' | tail -1 | xargs -I {} -t echo "https://img.shields.io/badge/{}-blue?label=total%20lines"
