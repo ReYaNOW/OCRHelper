@@ -52,6 +52,7 @@ def open_tk_img(path_to_image: str):
 
 def check_path(path):
     if os.path.basename(__file__).rsplit('.', maxsplit=1)[-1] != 'py':
+        # This will be the case when the app was compiled via PyInstaller
         return f'ocrhelper/{path}'
     return f'../{path}'
 
