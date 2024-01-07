@@ -194,20 +194,6 @@ class Gui(ctk.CTk):
         )
         msg_box.bind('<Destroy>', self.close_window)
 
-    def destroy_unmapped_children(self, parent):
-        """
-        Destroys unmapped windows
-        (empty gray ones which got an error during initialization)
-        recursively from bottom (root window) to top
-        (last opened window).
-        """
-        children = parent.children.copy()
-        for index, child in children.items():
-            if not child.winfo_ismapped():
-                parent.children.pop(index).destroy()
-            else:
-                self.destroy_unmapped_children(child)
-
     def show_window(self):
         self.change_geometry_to_center()
         self.iconify()
