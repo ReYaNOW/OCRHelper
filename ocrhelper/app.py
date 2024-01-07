@@ -30,10 +30,10 @@ class App:
         self.gui.load_ocr_toast.show_toast()
         self.gui.update()
 
-        logger.info(f'Импорт модуля EasyOCR')
+        logger.info('Импорт модуля EasyOCR')
         import easyocr
 
-        logger.success(f'Импорт EasyOCR прошел успешно')
+        logger.success('Импорт EasyOCR прошел успешно')
 
         self.easyocr = easyocr
         self.languages = config.get_value('recognition_languages')

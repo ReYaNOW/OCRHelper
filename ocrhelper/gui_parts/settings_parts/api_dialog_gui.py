@@ -23,7 +23,7 @@ class ApiDialogWindow:
     def create_dialog_window(self):
         self.dialog_window = ctk.CTkToplevel(self.settings_frame)
         self.dialog_window.title('OCRHelper')
-        self.dialog_window.geometry(f'343x170')
+        self.dialog_window.geometry('343x170')
 
         # without this icon will not be set on ctk.CTKTopLevel
         self.dialog_window.after(

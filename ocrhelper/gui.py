@@ -1,10 +1,13 @@
 import tkinter as tk
+import traceback
 from typing import Callable
 
 import keyboard
 import pystray
+from CTkMessagebox import CTkMessagebox
 from PIL import Image
 from pystray import MenuItem as item
+from loguru import logger
 
 import customtkinter as ctk
 from ocrhelper.components import config
@@ -26,6 +29,7 @@ class Gui(ctk.CTk):
 
         self.mode_var = None
         self.use_debug_win = False
+        self.errors_counter = 0
 
         super().__init__(fg_color='#262834')
         self.title('OCR Helper')
@@ -59,11 +63,11 @@ class Gui(ctk.CTk):
         image = Image.open(check_path(r'assets/icon.ico'))
         menu = (
             item('Open menu', self.show_window, default=True),
-            item('Exit', self.quit_window),
+            item('Exit', self.quit_app),
         )
 
-        tray_icon = pystray.Icon('OCRHelper', image, 'OCRHelper', menu)
-        tray_icon.run_detached()
+        self.tray_icon = pystray.Icon('OCRHelper', image, 'OCRHelper', menu)
+        self.tray_icon.run_detached()
         self.protocol('WM_DELETE_WINDOW', self.withdraw)
 
     def _place_settings_button(self):
@@ -172,13 +176,58 @@ class Gui(ctk.CTk):
     def change_mode_var(self, mode):
         self.mode_var = mode
 
+    def report_callback_exception(self, exc, val, tb):
+        if self.errors_counter > 0:
+            self.close_window()
+            return
+
+        self.errors_counter += 1
+        tb_lines = [
+            str(line) for line in traceback.format_exception(exc, val, tb)
+        ]
+        logger.error(''.join(tb_lines))
+        msg_box = CTkMessagebox(
+            title='Error',
+            message=val,
+            icon='cancel',
+            font=(config.get_font_name(), 16),
+        )
+        msg_box.bind('<Destroy>', self.close_window)
+
+    def destroy_unmapped_children(self, parent):
+        """
+        Destroys unmapped windows
+        (empty gray ones which got an error during initialization)
+        recursively from bottom (root window) to top
+        (last opened window).
+        """
+        children = parent.children.copy()
+        for index, child in children.items():
+            if not child.winfo_ismapped():
+                parent.children.pop(index).destroy()
+            else:
+                self.destroy_unmapped_children(child)
+
     def show_window(self):
         self.change_geometry_to_center()
         self.iconify()
         self.update()
         self.after(15, self.deiconify)
 
-    def quit_window(self, tray_icon):
+    def close_window(self, _=None):
+        self.update()
+        config.change_value('font', 'Rubik')
+        config.save_config()
+
+        self.debug_window.window.destroy()
+        # self.deiconify()
+        # self.update()
+        self.quit()
+
+        self.tray_icon.visible = False
+        self.tray_icon.stop()
+
+    def quit_app(self, tray_icon):
         self.update()
         config.change_value('font', 'Rubik')
         config.save_config()

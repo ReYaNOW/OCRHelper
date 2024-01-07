@@ -39,7 +39,7 @@ class TextRecognition:
     def messages(self, text=None):
         logger.info(f'Результат = \'{text}\'')
         enter = '\n'
-        
+
         self.debug_window.add_message(
             'Текст успешно распознан\n', 'green', enter=enter
         )

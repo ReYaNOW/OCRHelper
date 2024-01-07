@@ -18,7 +18,7 @@ class LanguagesFrame(ctk.CTkFrame):
             width=300,
             height=130,
         )
-        
+
         languages_label = ctk.CTkLabel(
             self,
             text='Языки для распознавания',
