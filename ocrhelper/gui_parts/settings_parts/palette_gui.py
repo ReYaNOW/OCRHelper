@@ -4,13 +4,13 @@ from PIL import Image, ImageTk, ImageColor
 
 import customtkinter as ctk
 
+from ocrhelper.components import config
 from ocrhelper.components.utils import check_path
 
 
 class PaletteFrame(ctk.CTkFrame):
-    def __init__(self, settings_frame, config):
-        self.config = config
-        self.rect_color = config['rect_color']
+    def __init__(self, settings_frame):
+        self.rect_color = config.get_value('rect_color')
 
         super().__init__(
             settings_frame,
@@ -22,7 +22,7 @@ class PaletteFrame(ctk.CTkFrame):
 
         self.rect_color_default = '#b800cf'
         self.rect_color_def_rgb = (184, 0, 207)
-        self.rect_color_rgb = ImageColor.getcolor(self.rect_color, "RGB")
+        self.rect_color_rgb = ImageColor.getcolor(self.rect_color, 'RGB')
 
         self.red_var, self.red_slider = self._place_red_widgets()
         self.green_var, self.green_slider = self._place_green_widgets()
@@ -35,14 +35,14 @@ class PaletteFrame(ctk.CTkFrame):
 
     def _place_hex_label_and_entry(self):
         hex_label = ctk.CTkLabel(
-            self, text='HEX :', font=(f'{self.config["font"]} bold', 15)
+            self, text='HEX :', font=(f'{config.get_font_name()} bold', 15)
         )
         hex_label.place(relx=0.285, rely=0.15, anchor='center')
 
         self.hex_var = ctk.StringVar(self, self.rect_color)
         self.hex_entry = ctk.CTkEntry(self, textvariable=self.hex_var)
         self.hex_entry.place(relx=0.365, rely=0.09)
-        self.hex_entry.bind("<Leave>", lambda event: self.focus())
+        self.hex_entry.bind('<Leave>', lambda event: self.focus())
 
     def _place_red_widgets(self):
         hex_color = self.rect_color_rgb[0]
@@ -130,7 +130,7 @@ class PaletteFrame(ctk.CTkFrame):
         self.bind_button('<Leave>', self.change_button, self.change_im)
 
     def create_color_labels_and_slider(self, color_name: str, color, start_v):
-        if self.config['font'] == 'Consolas':
+        if config.get_font_name() == 'Consolas':
             fontsize = 17
         else:
             fontsize = 15
@@ -138,14 +138,14 @@ class PaletteFrame(ctk.CTkFrame):
             self,
             text=color_name,
             text_color=color,
-            font=(f'{self.config["font"]} bold', fontsize),
+            font=(f'{config.get_font_name()} bold', fontsize),
         )
 
         color_var = ctk.IntVar(self, start_v)
         color_label_value = ctk.CTkLabel(
             self,
             text_color=color,
-            font=(self.config['font'], 15),
+            font=(config.get_font_name(), 15),
             textvariable=color_var,
         )
 
@@ -164,7 +164,7 @@ class PaletteFrame(ctk.CTkFrame):
         r, g, b = self.red_var.get(), self.green_var.get(), self.blue_var.get()
         hex_color = f'#{r:02x}{g:02x}{b:02x}'
 
-        self.config['rect_color'] = hex_color
+        config.change_value('rect_color', hex_color)
         self.example_canvas.itemconfigure(self.rect, outline=hex_color)
 
     def return_rect_color_to_default(self):
@@ -197,7 +197,7 @@ class PaletteFrame(ctk.CTkFrame):
             background='#202020',
             width=48,
             height=48,
-            relief="flat",
+            relief='flat',
         )
 
     def bind_button(self, type_of_bind, button: tk.Button, image: ImageTk):

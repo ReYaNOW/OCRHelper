@@ -1,4 +1,3 @@
-import json
 import tkinter as tk
 from typing import Callable
 
@@ -8,6 +7,7 @@ from PIL import Image
 from pystray import MenuItem as item
 
 import customtkinter as ctk
+from ocrhelper.components import config
 from ocrhelper.components.utils import bind_button_with_img, open_tk_img
 from ocrhelper.components.utils import check_path
 from ocrhelper.gui_parts.animation import AnimateWidget
@@ -20,25 +20,23 @@ ctk.set_appearance_mode('dark')
 
 
 class Gui(ctk.CTk):
-    def __init__(self, config, snip_trigger, load_ocr: Callable):
-        self.config = config
-        self.font = config['font']
+    def __init__(self, snip_trigger, load_ocr: Callable):
         self.snip_trigger = snip_trigger
         self.load_ocr = load_ocr
 
         self.mode_var = None
         self.use_debug_win = False
 
-        super().__init__(fg_color="#262834")
+        super().__init__(fg_color='#262834')
         self.title('OCR Helper')
-        self.geometry("670x300")
+        self.geometry('670x300')
 
         self.iconbitmap(check_path(r'assets/icon.ico'))
         self.resizable(False, False)
         self.withdraw()
 
         if 'Rubik' not in tk.font.families():
-            config['font'] = 'Consolas'
+            config.change_value('font', 'Consolas')
 
         self.change_geometry_to_center()
         self._create_system_tray_icon()
@@ -46,7 +44,7 @@ class Gui(ctk.CTk):
         self._place_mode_buttons()
         self._place_settings_button()
 
-        self.settings_frame = SettingsFrame(self, self.config, self.load_ocr)
+        self.settings_frame = SettingsFrame(self, self.load_ocr)
         self.settings_frame.place(relx=0, rely=0, anchor='sw')
         self.animated_widget = AnimateWidget(
             self.settings_frame, self.settings_button
@@ -84,7 +82,7 @@ class Gui(ctk.CTk):
             background='#262834',
             width=45,
             height=45,
-            relief="flat",
+            relief='flat',
         )
         self.settings_button.place(relx=0.919, rely=0.825)
         bind_button_with_img(
@@ -121,7 +119,6 @@ class Gui(ctk.CTk):
             'gui_update': self.update,
             'snip_trigger': self.snip_trigger,
             'debug_window': self.debug_window_null,
-            'config': self.config,
         }
         self.snipping_tool = SnippingTool(self, additional_methods)
 
@@ -146,7 +143,7 @@ class Gui(ctk.CTk):
         self.snipping_tool.display_snipping_tool()
 
     def get_current_debug_win(self):
-        if self.config['use_debug_window'] is True:
+        if config.get_value('use_debug_window') is True:
             return self.debug_window
         else:
             return self.debug_window_null
@@ -163,7 +160,7 @@ class Gui(ctk.CTk):
         return ctk.CTkButton(
             self,
             command=lambda: self.change_mode_var(mode),
-            font=(f'{self.config["font"]} bold', 20),
+            font=(f'{config.get_font_name()} bold', 20),
             text=text,
             fg_color='#5429FE',
             hover_color='#4a1e9e',
@@ -182,10 +179,9 @@ class Gui(ctk.CTk):
         self.after(15, self.deiconify)
 
     def quit_window(self, tray_icon):
-        self.config['font'] = 'Rubik'
-
-        with open(check_path('additional files/config.json'), 'w') as config:
-            config.write(json.dumps(self.config))
+        self.update()
+        config.change_value('font', 'Rubik')
+        config.save_config()
 
         self.debug_window.window.destroy()
         self.deiconify()

@@ -1,10 +1,9 @@
-import json
-
 import numpy
 import pyperclip
 from PIL import Image
 from loguru import logger
 
+from ocrhelper.components import config
 from ocrhelper.components.translation import translation
 from ocrhelper.components.utils import check_path
 from ocrhelper.gui import Gui
@@ -21,12 +20,7 @@ class App:
         self.languages = None
         self.use_gpt_stream = False
 
-        with open(check_path('additional files/config.json')) as config_file:
-            self.config = json.load(config_file)
-
-        self.gui = Gui(
-            self.config, self.snip_trigger, self.load_easyocr_with_toast
-        )
+        self.gui = Gui(self.snip_trigger, self.load_easyocr_with_toast)
 
         self.gui.after(15, self.easyocr_first_time_load)
         # run gui
@@ -35,13 +29,14 @@ class App:
     def easyocr_first_time_load(self):
         self.gui.load_ocr_toast.show_toast()
         self.gui.update()
-        
+
         logger.info(f'Импорт модуля EasyOCR')
         import easyocr
+
         logger.success(f'Импорт EasyOCR прошел успешно')
-        
+
         self.easyocr = easyocr
-        self.languages = self.config['recognition_languages']
+        self.languages = config.get_value('recognition_languages')
         self.load_easyocr_model()
 
         img = Image.open(check_path('additional files/load_easyocr.png'))
@@ -60,7 +55,7 @@ class App:
     def load_easyocr_with_toast(self):
         """Load EasyOCR with some languages
         if they are changed from a previous load"""
-        new_languages = self.config['recognition_languages']
+        new_languages = config.get_value('recognition_languages')
         if self.languages != new_languages:
             self.languages = new_languages
 
@@ -85,7 +80,7 @@ class App:
             image, self.languages, self.easyocr_model, self.gui.debug_window
         ).get_text()
 
-        translator = self.config['translator']
+        translator = config.get_value('translator')
         self.gui.debug_window.add_message(
             f'Перевод при помощи —\n{translator}\n',
             color='white',
@@ -104,7 +99,7 @@ class App:
         if translator == 'GPT Stream':
             self.use_gpt_stream = True
 
-        if self.config['need_copy_to_clipboard']:
+        if config.get_value('need_copy_to_clipboard'):
             pyperclip.copy(text)
 
         # put translated text on the screen in a new tkinter window

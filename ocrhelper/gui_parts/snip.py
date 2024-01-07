@@ -4,6 +4,7 @@ from loguru import logger
 import keyboard
 from PIL import ImageTk, ImageGrab
 
+from ocrhelper.components import config
 from ocrhelper.gui_parts.debug_window import DebugWindow
 
 
@@ -13,7 +14,6 @@ class SnippingTool:
         self.app_update = additional_methods['gui_update']
         self.snip_trigger = additional_methods['snip_trigger']
         self.debug_window: DebugWindow = additional_methods['debug_window']
-        self.config = additional_methods['config']
         self.master_screen = None
         self.snip_surface = None
         self.canvas_on_screen = False
@@ -78,11 +78,10 @@ class SnippingTool:
         self.debug_window = instance
 
     def on_button_press(self, event):
-        # save mouse drag start position
         self.start_x = self.snip_surface.canvasx(event.x)
         self.start_y = self.snip_surface.canvasy(event.y)
 
-        rect_color = self.config['rect_color']
+        rect_color = config.get_value('rect_color')
         self.rect = self.snip_surface.create_rectangle(
             0, 0, 1, 1, outline=rect_color, width=2
         )

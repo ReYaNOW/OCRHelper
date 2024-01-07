@@ -42,7 +42,7 @@ class DebugWindow:
         self.text_area.tag_config('green', foreground='#4FF96D')
         self.text_area.pack()
 
-    def add_message(self, text, color, enter="\n"):
+    def add_message(self, text, color, enter='\n'):
         self.text_area.insert('end', f'{text}{enter}', color)
         self.text_area.see('end')
         self.master.update()
@@ -61,7 +61,7 @@ class DebugWindowNullObject:
     def __init__(self, master):
         self.master = master
 
-    def add_message(self, text, color, enter="\n"):
+    def add_message(self, text, color, enter='\n'):
         pass
 
     def clear_text_area(self):

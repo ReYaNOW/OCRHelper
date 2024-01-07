@@ -1,14 +1,14 @@
 import keyring
-
 import customtkinter as ctk
+
 from ocrhelper.components.utils import create_stylish_button
 from ocrhelper.components.utils import validate_key, check_path
+from ocrhelper.components import config
 
 
 class ApiDialogWindow:
-    def __init__(self, settings_frame, config):
+    def __init__(self, settings_frame):
         self.settings_frame = settings_frame
-        self.config = config
 
         self.dialog_label = None
         self.dialog_window = None
@@ -33,7 +33,7 @@ class ApiDialogWindow:
             ),
         )
 
-        self.dialog_window.attributes("-topmost", True)
+        self.dialog_window.attributes('-topmost', True)
         self.dialog_window.resizable(False, False)
         self.dialog_window.protocol('WM_DELETE_WINDOW', self.close_window)
         self.dialog_window.withdraw()
@@ -80,10 +80,10 @@ class ApiDialogWindow:
         self.dialog_window.update_idletasks()
         screen_width = self.dialog_window.winfo_screenwidth()
         screen_height = self.dialog_window.winfo_screenheight()
-        
+
         x_coordinate = int((screen_width / 2) - (343 / 2))
         y_coordinate = int((screen_height / 2) - (170 / 2))
-        
+
         self.dialog_window.geometry(f'{x_coordinate}+{y_coordinate}')
         self.dialog_window.deiconify()
         self.input_entry.focus_force()
@@ -98,10 +98,8 @@ class ApiDialogWindow:
         key = self.entry_var.get()
         result = validate_key(key)
         if result is True:
-            keyring.set_password("system", "GPT_API_KEY", key)
-            self.config['api_key_is_set'] = True
+            self.set_api_key(key)
             self.dialog_label.configure(text='API-ключ сохранен')
-            self.ok_btn_var.set('Закрыть')
         else:
             self.dialog_label.configure(text='Предоставлен неверный API-ключ')
 
@@ -113,6 +111,6 @@ class ApiDialogWindow:
         self.create_dialog_window()
 
     def set_api_key(self, key):
-        keyring.set_password("system", "GPT_API_KEY", key)
-        self.dialog_label.configure(text='API-ключ сохранен')
-        self.config['api_key_is_set'] = True
+        keyring.set_password('system', 'GPT_API_KEY', key)
+        config.change_value('api_key_is_set', True)
+        self.ok_btn_var.set('Закрыть')

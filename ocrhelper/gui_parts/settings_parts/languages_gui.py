@@ -1,12 +1,13 @@
 from typing import Callable
 
 import customtkinter as ctk
+
 from ocrhelper.components.utils import create_stylish_button
+from ocrhelper.components import config
 
 
 class LanguagesFrame(ctk.CTkFrame):
-    def __init__(self, settings_frame, config, load_ocr: Callable):
-        self.config = config
+    def __init__(self, settings_frame, load_ocr: Callable):
         self.load_ocr = load_ocr
         self.button_pressed = None
 
@@ -17,11 +18,11 @@ class LanguagesFrame(ctk.CTkFrame):
             width=300,
             height=130,
         )
-
+        
         languages_label = ctk.CTkLabel(
             self,
-            text="Языки для распознавания",
-            font=(f'{self.config["font"]} bold', 19),
+            text='Языки для распознавания',
+            font=(f'{config.get_font_name()} bold', 19),
             corner_radius=20,
         )
         languages_label.place(relx=0.5, rely=0.23, anchor='center')
@@ -38,7 +39,7 @@ class LanguagesFrame(ctk.CTkFrame):
         change_button = create_stylish_button(
             self,
             text='Сменить',
-            font=f'{self.config["font"]}',
+            font=f'{config.get_font_name()}',
             fontsize=16,
             command=self.press_load_ocr_btn,
             width=65,
@@ -63,7 +64,7 @@ class LanguagesFrame(ctk.CTkFrame):
             fg_color='#5429FE',
             hover_color='#4a1e9e',
             text=language,
-            font=(f'{self.config["font"]}', 16),
+            font=(f'{config.get_font_name()}', 16),
             variable=lang_var,
             onvalue=language,
             offvalue='',
@@ -80,12 +81,12 @@ class LanguagesFrame(ctk.CTkFrame):
 
         if not validate_langs:
             self.eng_var.set('ENG')
-            self.config['recognition_languages'] = ['en']
+            config.change_value('recognition_languages', ['en'])
         else:
-            self.config['recognition_languages'] = validate_langs
+            config.change_value('recognition_languages', validate_langs)
 
     def load_langs_from_config(self):
-        for lang in self.config['recognition_languages']:
+        for lang in config.get_value('recognition_languages'):
             match lang:
                 case 'en':
                     self.eng_var.set('ENG')

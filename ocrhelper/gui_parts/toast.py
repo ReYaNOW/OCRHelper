@@ -8,8 +8,8 @@ and modified by me"""
 import customtkinter as ctk
 from tkinter import TclError
 
-DEFAULT_ICON_WIN32 = "\ue154"
-DEFAULT_ICON = "\u25f0"
+DEFAULT_ICON_WIN32 = '\ue154'
+DEFAULT_ICON = '\u25f0'
 BASELINE = 1.33398982438864281
 
 
@@ -64,7 +64,7 @@ class ToastNotification:
 
         self.toplevel = ctk.CTkToplevel(self.master)
         self.toplevel.overrideredirect(True)
-        self.toplevel.wm_attributes("-toolwindow", True)
+        self.toplevel.wm_attributes('-toolwindow', True)
         self.toplevel.attributes('-alpha', 0.95)
         self.toplevel.attributes('-topmost', True)
 
@@ -91,7 +91,7 @@ class ToastNotification:
             anchor='nw',
         ).grid(row=1, column=1, sticky='nsew', padx=10, pady=(0, 5))
 
-        self.toplevel.bind("<ButtonPress>", self.hide_toast)
+        self.toplevel.bind('<ButtonPress>', self.hide_toast)
 
         # specified duration to close
         if self.duration:
@@ -100,11 +100,11 @@ class ToastNotification:
     def hide_toast(self, *_):
         """Destroy and close the toast window."""
         try:
-            alpha = float(self.toplevel.attributes("-alpha"))
+            alpha = float(self.toplevel.attributes('-alpha'))
             if alpha <= 0.1:
                 self.toplevel.destroy()
             else:
-                self.toplevel.attributes("-alpha", alpha - 0.1)
+                self.toplevel.attributes('-alpha', alpha - 0.1)
                 self.toplevel.after(25, self.hide_toast)
         except TclError:
             if self.toplevel:
@@ -116,36 +116,36 @@ class ToastNotification:
                 self.toplevel.destroy()
 
     def _setup(self):
-        winsys = self.toplevel.tk.call("tk", "windowingsystem")
+        winsys = self.toplevel.tk.call('tk', 'windowingsystem')
 
         # minsize
         w, h = scale_size(self.toplevel, [300, 75])
         self.toplevel.minsize(w, h)
 
         # heading font
-        _font = ctk.CTkFont("TkDefaultFont")
+        _font = ctk.CTkFont('TkDefaultFont')
         self.titlefont = ctk.CTkFont(
-            family=_font["family"],
-            size=_font["size"] + 1,
-            weight="bold",
+            family=_font['family'],
+            size=_font['size'] + 1,
+            weight='bold',
         )
         # symbol font
-        self.iconfont = ctk.CTkFont(size=43, weight="bold")
+        self.iconfont = ctk.CTkFont(size=43, weight='bold')
         match winsys:
-            case "win32":
-                self.iconfont["family"] = "Segoe UI Symbol"
+            case 'win32':
+                self.iconfont['family'] = 'Segoe UI Symbol'
                 self.icon = DEFAULT_ICON_WIN32
                 if self.position is None:
                     x, y = scale_size(self.toplevel, [5, 50])
                     self.position = (x, y, 'se')
-            case "x11":
-                self.iconfont["family"] = "FreeSerif"
+            case 'x11':
+                self.iconfont['family'] = 'FreeSerif'
                 self.icon = DEFAULT_ICON if self.icon is None else self.icon
                 if self.position is None:
                     x, y = scale_size(self.toplevel, [0, 0])
                     self.position = (x, y, 'se')
             case _:
-                self.iconfont["family"] = "Apple Symbols"
+                self.iconfont['family'] = 'Apple Symbols'
                 self.toplevel.update_idletasks()
                 self.icon = DEFAULT_ICON if self.icon is None else self.icon
                 if self.position is None:
@@ -159,7 +159,7 @@ class ToastNotification:
 
         screen_w = self.toplevel.winfo_screenwidth()
         screen_h = self.toplevel.winfo_screenheight()
-        self.toplevel.geometry(f"+{screen_w - 299}+{screen_h - 122}")
+        self.toplevel.geometry(f'+{screen_w - 299}+{screen_h - 122}')
 
 
 def scale_size(widget, size):
@@ -188,16 +188,3 @@ def scale_size(widget, size):
         return int(size * factor)
     elif isinstance(size, tuple) or isinstance(size, list):
         return [int(x * factor) for x in size]
-
-
-if __name__ == '__main__':
-    window = ctk.CTk()
-    window.geometry('300x300')
-
-    toast = ToastNotification(window)
-    toast_button = ctk.CTkButton(
-        window, text='Show toast', command=toast.show_toast
-    )
-    toast_button.place(relx=0.5, rely=0.5, anchor='center')
-
-    window.mainloop()

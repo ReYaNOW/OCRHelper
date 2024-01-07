@@ -1,13 +1,14 @@
 import customtkinter as ctk
 
-from ocrhelper.components.utils import create_stylish_button
+from ocrhelper.components import config
 from ocrhelper.components.utils import check_path
+from ocrhelper.components.utils import create_stylish_button
 
 
 class OptionsWindow:
-    def __init__(self, settings_frame, config):
+    def __init__(self, settings_frame):
         self.settings_frame = settings_frame
-        self.config = config
+        self.font_name = config.get_value('font')
 
         self.option_window = None
         self.clipboard_frame = None
@@ -28,14 +29,13 @@ class OptionsWindow:
             ),
         )
 
-        self.option_window.attributes("-topmost", True)
+        self.option_window.attributes('-topmost', True)
         self.option_window.resizable(False, False)
         self.option_window.protocol('WM_DELETE_WINDOW', self.close_window)
         self.option_window.withdraw()
 
         self.clipboard_frame = OptionsFrame(
             self.option_window,
-            self.config,
             ('Добавлять распознанный', 'текст в буфер обмена'),
             type_='clipboard',
         )
@@ -43,7 +43,6 @@ class OptionsWindow:
 
         self.debug_frame = OptionsFrame(
             self.option_window,
-            self.config,
             ('Использовать debug', 'окно'),
             type_='debug',
         )
@@ -52,7 +51,7 @@ class OptionsWindow:
         save_button = create_stylish_button(
             self.option_window,
             text='Ok',
-            font=self.config['font'],
+            font=self.font_name,
             fontsize=16,
             command=self.close_window,
             height=45,
@@ -75,10 +74,9 @@ class OptionsWindow:
 
 
 class OptionsFrame(ctk.CTkFrame):
-    def __init__(self, settings: ctk.CTkToplevel, config, texts, type_):
-        self.config = config
+    def __init__(self, settings: ctk.CTkToplevel, texts, type_):
         self.type_ = type_
-        font = config['font']
+        font = config.get_value('font')
         text1, text2 = texts
         super().__init__(
             settings,
@@ -97,7 +95,7 @@ class OptionsFrame(ctk.CTkFrame):
         )
         label.place(relx=0.5, rely=0.35, anchor='center')
 
-        var_value = self.config[self.get_config_key()]
+        var_value = config.get_value(self.get_config_key())
         self.var = ctk.BooleanVar(self, var_value)
         self.checkbox = ctk.CTkCheckBox(
             self,
@@ -110,10 +108,10 @@ class OptionsFrame(ctk.CTkFrame):
         )
         self.checkbox.place(relx=0.5, rely=0.59, anchor='center')
 
-        label.bind("<Enter>", self.on_enter)
-        label.bind("<Leave>", self.on_leave)
+        label.bind('<Enter>', self.on_enter)
+        label.bind('<Leave>', self.on_leave)
         label.bind(
-            "<Button-1>",
+            '<Button-1>',
             lambda event: self.var.set(False)
             if self.var.get() is True
             else self.var.set(True),
@@ -128,7 +126,7 @@ class OptionsFrame(ctk.CTkFrame):
     def change_val_in_config(self):
         key = self.get_config_key()
         value = self.var.get()
-        self.config[key] = value
+        config.change_value(key, value)
 
     def on_enter(self, _):
         self.checkbox._on_enter()  # noqa
