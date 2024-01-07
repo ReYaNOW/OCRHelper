@@ -206,8 +206,6 @@ class Gui(ctk.CTk):
         config.save_config()
 
         self.debug_window.window.destroy()
-        # self.deiconify()
-        # self.update()
         self.quit()
 
         self.tray_icon.visible = False
