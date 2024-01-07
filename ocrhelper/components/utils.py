@@ -8,36 +8,21 @@ from PIL import Image, ImageTk
 import customtkinter as ctk
 
 
-def create_stylish_button(
-    master,
-    text,
-    font,
-    command=None,
-    fontsize=None,
-    fg_color=None,
-    hover_color=None,
-    width=None,
-    height=None,
-    corner_radius=None,
-):
-    if fontsize is None:
-        fontsize = 20
+def create_stylish_button(master, **kwargs):
+    fontsize = kwargs.get('fontsize', 20)
+    fg_color = kwargs.get('fg_color', '#5429FE')
+    hover_color = kwargs.get('hover_color', '#4a1e9e')
+    width = kwargs.get('width', 147)
+    height = kwargs.get('height', 89)
+    corner_radius = kwargs.get('corner_radius', 12)
+
+    font = kwargs.get('font', 'Consolas')
     if font == 'Consolas' or font == 'Consolas bold':
         fontsize *= 1.15
-    if fg_color is None:
-        fg_color = '#5429FE'
-    if hover_color is None:
-        hover_color = '#4a1e9e'
-    if width is None:
-        width = 147
-    if height is None:
-        height = 89
-    if corner_radius is None:
-        corner_radius = 12
     return ctk.CTkButton(
         master=master,
-        command=command,
-        text=text,
+        command=kwargs['command'],
+        text=kwargs['text'],
         font=(font, fontsize),
         fg_color=fg_color,
         hover_color=hover_color,
