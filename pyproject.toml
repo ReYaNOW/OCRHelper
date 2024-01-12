@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ocrhelper"
-version = "1.0.1"
+version = "1.1.0"
 description = "Tool for translating text from the screen and some more"
 authors = ["Sergei <reyangood@gmail.com>"]
 readme = "README.md"
