@@ -4,6 +4,7 @@ import customtkinter as ctk
 from ocrhelper.components.utils import create_stylish_button
 from ocrhelper.components.utils import validate_key, check_path
 from ocrhelper.components import config
+from ocrhelper.components import languages
 
 
 class ApiDialogWindow:
@@ -39,7 +40,9 @@ class ApiDialogWindow:
         self.dialog_window.withdraw()
 
         self.dialog_label = ctk.CTkLabel(
-            self.dialog_window, text='Введите API-ключ', font=('Rubik', 18)
+            self.dialog_window,
+            text=languages.get_string('pls_enter_api'),
+            font=('Rubik', 18),
         )
         self.dialog_label.place(relx=0.5, rely=0.2, anchor='center')
 
@@ -60,7 +63,7 @@ class ApiDialogWindow:
 
         self.dialog_cancel_btn = create_stylish_button(
             self.dialog_window,
-            text='Отмена',
+            text=languages.get_string('cancel'),
             command=self.close_window,
             font='Rubik',
             fontsize=18,
@@ -89,7 +92,7 @@ class ApiDialogWindow:
         self.input_entry.focus_force()
 
     def button_click_event(self):
-        if self.ok_btn_var.get() == 'Закрыть':
+        if self.ok_btn_var.get() == languages.get_string('close'):
             self.close_window()
         self.dialog_ok_btn.configure(state='disabled')
         self.dialog_cancel_btn.configure(state='disabled')
@@ -99,9 +102,13 @@ class ApiDialogWindow:
         result = validate_key(key)
         if result is True:
             self.set_api_key(key)
-            self.dialog_label.configure(text='API-ключ сохранен')
+            self.dialog_label.configure(
+                text=languages.get_string('api_is_saved')
+            )
         else:
-            self.dialog_label.configure(text='Предоставлен неверный API-ключ')
+            self.dialog_label.configure(
+                text=languages.get_string('invalid_api')
+            )
 
         self.dialog_ok_btn.configure(state='normal')
         self.dialog_cancel_btn.configure(state='normal')
@@ -113,4 +120,4 @@ class ApiDialogWindow:
     def set_api_key(self, key):
         keyring.set_password('system', 'GPT_API_KEY', key)
         config.change_value('api_key_is_set', True)
-        self.ok_btn_var.set('Закрыть')
+        self.ok_btn_var.set(languages.get_string('close'))

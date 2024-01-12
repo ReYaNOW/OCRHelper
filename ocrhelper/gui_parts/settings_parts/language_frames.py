@@ -1,9 +1,11 @@
 from typing import Callable
 
 import customtkinter as ctk
+from CTkMessagebox import CTkMessagebox
 
 from ocrhelper.components.utils import create_stylish_button
 from ocrhelper.components import config
+from ocrhelper.components import languages
 
 
 class LanguagesFrame(ctk.CTkFrame):
@@ -21,7 +23,7 @@ class LanguagesFrame(ctk.CTkFrame):
 
         languages_label = ctk.CTkLabel(
             self,
-            text='Языки для распознавания',
+            text=languages.get_string('langs_for_recognition'),
             font=(f'{config.get_font_name()} bold', 19),
             corner_radius=20,
         )
@@ -38,7 +40,7 @@ class LanguagesFrame(ctk.CTkFrame):
 
         change_button = create_stylish_button(
             self,
-            text='Сменить',
+            text=languages.get_string('change'),
             font=f'{config.get_font_name()}',
             fontsize=16,
             command=self.press_load_ocr_btn,
@@ -50,9 +52,12 @@ class LanguagesFrame(ctk.CTkFrame):
         self.load_langs_from_config()
 
     def press_load_ocr_btn(self):
+        if config.get_value('ocr_is_loading'):
+            return
         if self.button_pressed:
             return
         self.button_pressed = True
+
         self.load_ocr()
         self.button_pressed = False
 
@@ -74,10 +79,20 @@ class LanguagesFrame(ctk.CTkFrame):
         return lang_var, lang_option
 
     def set_selected_languages(self):
-        languages = self.eng_var.get(), self.rus_var.get(), self.jap_var.get()
+        selected_langs = self.get_selected_languages()
+        if 'RUS' in selected_langs and 'JAP' in selected_langs:
+            msg = CTkMessagebox(
+                title='OCRHelper',
+                message=languages.get_string('jap_compatible_only_with'),
+                button_color='#5429FE',
+                button_hover_color='#4a1e9e',
+                font=(config.get_font_name(), 16),
+            )
+            msg.bind('<Destroy>', lambda _: self.jap_var.set(''))
+            return
 
         # change to 2 char versions to work with EasyOCR
-        validate_langs = [lan[:-1].lower() for lan in languages if lan != '']
+        validate_langs = [lan[:-1].lower() for lan in selected_langs if lan != '']
 
         if not validate_langs:
             self.eng_var.set('ENG')
@@ -94,3 +109,6 @@ class LanguagesFrame(ctk.CTkFrame):
                     self.rus_var.set('RUS')
                 case 'ja':
                     self.jap_var.set('JAP')
+
+    def get_selected_languages(self):
+        return self.eng_var.get(), self.rus_var.get(), self.jap_var.get()

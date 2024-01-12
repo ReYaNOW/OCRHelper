@@ -34,9 +34,8 @@ class ToastNotification:
             icon_color (str):
                 Change color of icon to custom.
 
-            duration (int):
-                The number of milliseconds to show the toast. If None
-                (default), then you must click the toast to close it.
+            duration (int): The number of milliseconds to show the toast.
+            If None, then you must click the toast to close it.
 
         """
         self.master = master
@@ -87,7 +86,7 @@ class ToastNotification:
             self.toplevel,
             text=self.message,
             justify='left',
-            wraplength=200,
+            wraplength=220,
             anchor='nw',
         ).grid(row=1, column=1, sticky='nsew', padx=10, pady=(0, 5))
 

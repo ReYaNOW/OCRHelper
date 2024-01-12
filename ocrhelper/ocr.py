@@ -1,30 +1,31 @@
 import numpy
 from loguru import logger
 
+from ocrhelper.components import languages
 from ocrhelper.gui_parts.debug_window import DebugWindow
 
 
 class TextRecognition:
-    def __init__(self, image, languages, easyocr_model, debug_window):
+    def __init__(self, image, recog_langs, easyocr_model, debug_window):
         self.image = image
-        self.languages = languages
+        self.languages = recog_langs
         self.easyocr_model = easyocr_model
         self.debug_window: DebugWindow = debug_window
 
         self.text = None
-        self.current_ocr = None
 
-        self.debug_window.add_message('Начинаю распознавание\n', 'white')
-
+        self.debug_window.add_message(
+            languages.get_string('starting_recog'), 'white'
+        )
         self.recognition(image)
 
     def recognition(self, image):
-        text = self.easy_ocr(image)
-        self.messages(text)
+        text = self.recognize_text(image)
+        self.add_messages(text)
         self.text = text
         return
 
-    def easy_ocr(self, image):
+    def recognize_text(self, image):
         reader = self.easyocr_model
         result = reader.readtext(
             numpy.array(image),
@@ -36,12 +37,11 @@ class TextRecognition:
         )
         return ' '.join(result)
 
-    def messages(self, text=None):
+    def add_messages(self, text=None):
         logger.info(f'Результат = \'{text}\'')
-        enter = '\n'
 
         self.debug_window.add_message(
-            'Текст успешно распознан\n', 'green', enter=enter
+            languages.get_string('recog_success'), 'green', enter='\n'
         )
 
     def get_text(self):

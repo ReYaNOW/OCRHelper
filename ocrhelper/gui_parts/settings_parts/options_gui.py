@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from ocrhelper.components import config
+from ocrhelper.components import languages
 from ocrhelper.components.utils import check_path
 from ocrhelper.components.utils import create_stylish_button
 
@@ -18,7 +19,7 @@ class OptionsWindow:
 
     def create_option_window(self):
         self.option_window = ctk.CTkToplevel(
-            self.settings_frame, width=292, height=280
+            self.settings_frame, width=292, height=280, fg_color='#262834'
         )
 
         # without this icon will not be set on ctk.CTKTopLevel
@@ -33,17 +34,21 @@ class OptionsWindow:
         self.option_window.resizable(False, False)
         self.option_window.protocol('WM_DELETE_WINDOW', self.close_window)
         self.option_window.withdraw()
-
+        
+        p1 = languages.get_string('clipboard_p1')
+        p2 = languages.get_string('clipboard_p2')
         self.clipboard_frame = OptionsFrame(
             self.option_window,
-            ('Добавлять распознанный', 'текст в буфер обмена'),
+            (p1, p2),
             type_='clipboard',
         )
         self.clipboard_frame.place(relx=0.5, rely=0.1875, anchor='center')
-
+        
+        p1 = languages.get_string('debug_p1')
+        p2 = languages.get_string('debug_p2')
         self.debug_frame = OptionsFrame(
             self.option_window,
-            ('Использовать debug', 'окно'),
+            (p1, p2),
             type_='debug',
         )
         self.debug_frame.place(relx=0.5, rely=0.54, anchor='center')
@@ -82,6 +87,8 @@ class OptionsFrame(ctk.CTkFrame):
             settings,
             bg_color='#262834',
             fg_color='#202020',
+            border_width=2,
+            border_color='#5429FE',
             corner_radius=20,
             width=275,
             height=90,
@@ -106,7 +113,7 @@ class OptionsFrame(ctk.CTkFrame):
             hover_color='#4a1e9e',
             variable=self.var,
         )
-        self.checkbox.place(relx=0.5, rely=0.59, anchor='center')
+        self.checkbox.place(relx=0.5, rely=0.61, anchor='center')
 
         label.bind('<Enter>', self.on_enter)
         label.bind('<Leave>', self.on_leave)

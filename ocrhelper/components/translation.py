@@ -3,9 +3,12 @@ from deep_translator import GoogleTranslator
 from loguru import logger
 import keyring
 
+from ocrhelper.components import config
 
-def translation(text, from_lang, to_lang, translator='Google Translator'):
+
+def translation(text, from_lang, translator='Google Translator'):
     logger.info(f'Перевод при помощи {translator}')
+    to_lang = to_lang_convert(config.get_value('translation_language'))
     match translator:
         case 'Google':
             if len(from_lang) == 1 or from_lang not in ('ru', 'en'):
@@ -20,16 +23,12 @@ def translation(text, from_lang, to_lang, translator='Google Translator'):
             return translator_obj.translate(text=text)
 
         case 'GPT':
-            from_lang_conv = lang_convert(from_lang)
-            to_lang_conv = lang_convert(to_lang)
-            return gpt_request(text, from_lang_conv, to_lang_conv)
+            from_lang_conv = langs_convert_gpt(from_lang)
+            return gpt_request(text, from_lang_conv, to_lang)
 
         case 'GPT Stream':
-            from_lang_conv = lang_convert(from_lang)
-            to_lang_conv = lang_convert(to_lang)
-            return gpt_request(
-                text, from_lang_conv, to_lang_conv, use_stream=True
-            )
+            from_lang_conv = langs_convert_gpt(from_lang)
+            return gpt_request(text, from_lang_conv, to_lang, use_stream=True)
 
 
 def gpt_request(text, from_lang, to_lang, use_stream=False):
@@ -44,22 +43,29 @@ def gpt_request(text, from_lang, to_lang, use_stream=False):
         model='gpt-3.5-turbo',
         messages=[{'role': 'user', 'content': request}],
         stream=use_stream,
-        api_key=keyring.get_password("system", "GPT_API_KEY"),
+        api_key=keyring.get_password('system', 'GPT_API_KEY'),
     )
     if use_stream:
         return response
     return response['choices'][0]['message']['content']
 
 
-def lang_convert(language):
+def to_lang_convert(language):
     match language:
-        case ['en']:
+        case 'ENG':
             return 'english'
-        case ['ru']:
+        case 'RUS':
             return 'russian'
-        case ['en', 'ru']:
-            return 'english and russian'
-        case ['ru', 'en']:
-            return 'english and russian'
-        case _:
-            return language
+        case 'JAP':
+            return 'japanese'
+
+
+def langs_convert_gpt(languages):
+    for lang in languages:
+        match lang:
+            case 'en':
+                return 'english'
+            case 'ru':
+                return 'russian'
+            case 'ja':
+                return 'japanese'

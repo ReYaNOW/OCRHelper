@@ -5,6 +5,7 @@ import keyboard
 from PIL import ImageTk, ImageGrab
 
 from ocrhelper.components import config
+from ocrhelper.components import languages
 from ocrhelper.gui_parts.debug_window import DebugWindow
 
 
@@ -72,7 +73,9 @@ class SnippingTool:
 
     def display_debug_window(self):
         self.debug_window.tkinter_deiconify()
-        self.debug_window.add_message('Ожидание скриншота', 'white')
+        self.debug_window.add_message(
+            languages.get_string('waiting_for_screenshot'), 'white'
+        )
 
     def change_debug_win_instance(self, instance):
         self.debug_window = instance

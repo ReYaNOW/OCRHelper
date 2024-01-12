@@ -1,1 +1,16 @@
-{"recognition_languages": ["en"], "translator": "Google", "font": "Rubik", "rect_color": "#b800cf", "api_key_is_set": false, "need_copy_to_clipboard": false, "use_debug_window": false}
+{
+  "interface_language": "ENG",
+  "translation_language": "RUS",
+  "recognition_languages": [
+    "en",
+    "ru"
+  ],
+  "ocr_is_loading": false,
+  "ocr_is_loaded": false,
+  "translator": "Google",
+  "font": "Rubik",
+  "rect_color": "#b800cf",
+  "api_key_is_set": false,
+  "need_copy_to_clipboard": false,
+  "use_debug_window": false
+}
