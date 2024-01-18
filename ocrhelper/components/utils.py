@@ -4,6 +4,7 @@ from random import randint
 
 import openai
 from PIL import Image, ImageTk
+import keyring
 
 import customtkinter as ctk
 
@@ -67,3 +68,19 @@ def validate_key(key):
         return True
     except openai.error.AuthenticationError:
         return False
+
+
+def find_word_in_dictionary(word, to_lang):
+    request = (
+        f'Please explain what does this word mean.\nWord - {word}\n'
+        f'Answer in {to_lang} language. '
+        f'In the answer, write given word in the original language. '
+    )
+    response = openai.ChatCompletion.create(
+        model='gpt-3.5-turbo',
+        temperature=0.3,
+        messages=[{'role': 'user', 'content': request}],
+        api_key=keyring.get_password('system', 'GPT_API_KEY'),
+        max_tokens=800,
+    )
+    return response['choices'][0]['message']['content']
