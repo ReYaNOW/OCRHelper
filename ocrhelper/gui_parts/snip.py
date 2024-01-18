@@ -95,8 +95,8 @@ class SnippingTool:
         coords = (self.start_x, self.current_x, self.start_y, self.current_y)
         if self.coordinates_validator(*coords) is False:
             logger.warning(
-                'Была выбрана слишком маленькая область, '
-                'распознавание отменено'
+                'The area selected was too small, '
+                'recognition canceled'
             )
             return self.destroy_screenshot_mode()
 
@@ -121,7 +121,7 @@ class SnippingTool:
 
     def display_rectangle_position(self):
         logger.debug(
-            f'координаты: {self.start_x} {self.start_y} {self.current_x}'
+            f'Coordinates: {self.start_x} {self.start_y} {self.current_x} '
             f'{self.current_y}'
         )
 
@@ -161,5 +161,5 @@ class SnippingTool:
         coords = [crd + correction for crd in (x1, y1, pillow_x2, pillow_y2)]
 
         image = self.screenshot.crop(coords)
-        logger.debug(f'размер изображения: {image.size}')
+        logger.debug(f'Image size: {image.size}')
         self.snip_trigger(image, (x1, y1))
