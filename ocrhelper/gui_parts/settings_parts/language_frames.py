@@ -79,8 +79,8 @@ class LanguagesFrame(ctk.CTkFrame):
         return lang_var, lang_option
 
     def set_selected_languages(self):
-        selected_langs = self.get_selected_languages()
-        if 'RUS' in selected_langs and 'JAP' in selected_langs:
+        langs = self.get_selected_languages()
+        if 'RUS' in langs and 'JAP' in langs:
             msg = CTkMessagebox(
                 title='OCRHelper',
                 message=languages.get_string('jap_compatible_only_with'),
@@ -92,7 +92,7 @@ class LanguagesFrame(ctk.CTkFrame):
             return
 
         # change to 2 char versions to work with EasyOCR
-        validate_langs = [lan[:-1].lower() for lan in selected_langs if lan != '']
+        validate_langs = [lan[:-1].lower() for lan in langs if lan != '']
 
         if not validate_langs:
             self.eng_var.set('ENG')
