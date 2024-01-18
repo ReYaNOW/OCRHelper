@@ -34,7 +34,7 @@ class OptionsWindow:
         self.option_window.resizable(False, False)
         self.option_window.protocol('WM_DELETE_WINDOW', self.close_window)
         self.option_window.withdraw()
-        
+
         p1 = languages.get_string('clipboard_p1')
         p2 = languages.get_string('clipboard_p2')
         self.clipboard_frame = OptionsFrame(
@@ -43,7 +43,7 @@ class OptionsWindow:
             type_='clipboard',
         )
         self.clipboard_frame.place(relx=0.5, rely=0.1875, anchor='center')
-        
+
         p1 = languages.get_string('debug_p1')
         p2 = languages.get_string('debug_p2')
         self.debug_frame = OptionsFrame(
