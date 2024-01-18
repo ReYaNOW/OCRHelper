@@ -6,8 +6,8 @@ import keyring
 from ocrhelper.components import config
 
 
-def translation(text, from_lang, translator='Google Translator'):
-    logger.info(f'Перевод при помощи {translator}')
+def translation(text, from_lang, translator='Google'):
+    logger.info(f'Translation using {translator}')
     to_lang = to_lang_convert(config.get_value('translation_language'))
     match translator:
         case 'Google':
@@ -41,6 +41,7 @@ def gpt_request(text, from_lang, to_lang, use_stream=False):
 
     response = openai.ChatCompletion.create(
         model='gpt-3.5-turbo',
+        temperature=0.3,
         messages=[{'role': 'user', 'content': request}],
         stream=use_stream,
         api_key=keyring.get_password('system', 'GPT_API_KEY'),
