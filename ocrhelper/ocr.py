@@ -38,7 +38,7 @@ class TextRecognition:
         return ' '.join(result)
 
     def add_messages(self, text=None):
-        logger.info(f'Результат = \'{text}\'')
+        logger.info(f'Result = \'{text}\'')
 
         self.debug_window.add_message(
             languages.get_string('recog_success'), 'green', enter='\n'
