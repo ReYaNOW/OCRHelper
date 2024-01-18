@@ -33,7 +33,7 @@ class SettingsFrame(ctk.CTkFrame):
             corner_radius=11,
         )
         self.api_button.place(relx=0.46, rely=0.815, anchor='ne')
-        
+
         self.options_window = OptionsWindow(self)
         self.addit_sett_button = create_stylish_button(
             self,
