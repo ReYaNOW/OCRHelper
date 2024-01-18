@@ -20,7 +20,7 @@ class ToastNotification:
     """
 
     def __init__(
-        self, master, title=None, message=None, icon_color=None, duration=3500
+        self, master, title=None, message=None, icon_color=None, duration=5000
     ):
         """
         Parameters:
@@ -34,8 +34,9 @@ class ToastNotification:
             icon_color (str):
                 Change color of icon to custom.
 
-            duration (int): The number of milliseconds to show the toast.
-            If None, then you must click the toast to close it.
+            duration (int):
+                The number of milliseconds to show the toast.
+                If None, then you must click the toast to close it.
 
         """
         self.master = master
