@@ -16,7 +16,6 @@ from ocrhelper.gui_parts.animation import AnimateWidget
 class MainFrame(ctk.CTkFrame):
     def __init__(self, master, load_ocr):
         super().__init__(master, width=670, height=300, fg_color='#262834')
-        self.mode_var = None
         self.handler_working = False
 
         self._place_main_screen_buttons()
@@ -31,28 +30,28 @@ class MainFrame(ctk.CTkFrame):
         self._place_settings_button()
 
     def _place_main_screen_buttons(self):
-        self.mode_var = ctk.StringVar(self, 'translation')
-
         string = languages.get_string('translation_mode')
-        transl_mode_button = self.create_mode_button(string)
-        transl_mode_button.place(relx=0.073, rely=0.300)
-        
+        self.transl_mode_button = self.create_mode_button(string)
+        self.transl_mode_button.place(relx=0.073, rely=0.300)
+
         string = languages.get_string('dict_mode')
-        dict_mode_button = self.create_mode_button(string)
-        dict_mode_button.place(relx=0.389, rely=0.300)
-        
+        self.dict_mode_button = self.create_mode_button(string)
+        self.dict_mode_button.place(relx=0.389, rely=0.300)
+
         string = languages.get_string('decrypt_mode')
-        decrypt_mode_button = self.create_mode_button(string)
-        decrypt_mode_button.place(relx=0.705, rely=0.300)
+        self.decrypt_mode_button = self.create_mode_button(string)
+        self.decrypt_mode_button.place(relx=0.705, rely=0.300)
+
+        selected_mode = config.get_value('selected_mode')
+        self.change_border_selection(selected_mode)
 
     def create_mode_button(self, text):
-        match text:
-            case 'Перевод':
-                mode = 'translation'
-            case 'Словарь':
-                mode = 'dict'
-            case _:
-                mode = 'decrypt'
+        if text == languages.get_string('translation_mode'):
+            mode = 'translation'
+        elif text == languages.get_string('dict_mode'):
+            mode = 'dict'
+        else:
+            mode = 'decrypt'
 
         return ctk.CTkButton(
             self,
@@ -61,13 +60,27 @@ class MainFrame(ctk.CTkFrame):
             text=text,
             fg_color='#5429FE',
             hover_color='#4a1e9e',
+            border_color='#4bbd55',
             width=147,
             height=89,
             corner_radius=20,
         )
 
-    def change_mode_var(self, mode):
-        self.mode_var = mode
+    def change_mode_var(self, selected_mode):
+        self.change_border_selection(selected_mode)
+        config.change_value('selected_mode', selected_mode)
+
+    def change_border_selection(self, selected_mode):
+        self.transl_mode_button.configure(border_width=0)
+        self.dict_mode_button.configure(border_width=0)
+        self.decrypt_mode_button.configure(border_width=0)
+        match selected_mode:
+            case 'translation':
+                self.transl_mode_button.configure(border_width=3)
+            case 'dict':
+                self.dict_mode_button.configure(border_width=3)
+            case _:
+                self.decrypt_mode_button.configure(border_width=3)
 
     def create_languages_frame(self):
         languages_frame = ctk.CTkFrame(
@@ -140,18 +153,17 @@ class MainFrame(ctk.CTkFrame):
             return
         self.handler_working = True
 
-        if widget_to_move == 'languages':
-            if self.settings_animation.widget_on_screen:
+        match widget_to_move:
+            case 'languages':
+                if self.settings_animation.widget_on_screen:
+                    self.settings_animation.animate()
+                self.languages_animation.animate()
+            case 'settings':
+                if self.languages_animation.widget_on_screen:
+                    self.languages_animation.animate()
+
                 self.settings_animation.animate()
 
-            self.languages_animation.animate()
-
-        elif widget_to_move == 'settings':
-            if self.languages_animation.widget_on_screen:
-                self.languages_animation.animate()
-
-            self.settings_animation.animate()
-        
         # soft lock to prevent widgets from layering on top of each other
         if widget_to_move == 'languages':
             self.after(300, self.change_handler_status)

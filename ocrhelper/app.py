@@ -9,9 +9,10 @@ from components import languages
 from ocrhelper.components import config
 from ocrhelper.components.translation import translation
 from ocrhelper.components.utils import check_path
+from ocrhelper.components.utils import find_word_in_dictionary
 from ocrhelper.gui import Gui
 from ocrhelper.ocr import TextRecognition
-from ocrhelper.translation_window import TranslationWindow
+from ocrhelper.translation_window import TranslationWindow, DictionaryWindow
 
 
 class App:
@@ -22,7 +23,6 @@ class App:
         self.easyocr_model = None
         self.ocr_is_loaded = False
         self.languages = None
-        self.use_gpt_stream = False
 
         self.gui = Gui(self.snip_trigger, self.load_easyocr_with_toast)
         self.load_ocr_threading(first_time=True)
@@ -51,10 +51,10 @@ class App:
             self.ocr_is_loaded = True
 
     def easyocr_first_time_load(self):
-        logger.info('Импорт модуля EasyOCR')
+        logger.info('Importing EasyOCR module')
         import easyocr
 
-        logger.success('Импорт EasyOCR прошел успешно')
+        logger.success('EasyOCR import was successful')
 
         self.easyocr = easyocr
         self.languages = config.get_value('recognition_languages')
@@ -68,9 +68,11 @@ class App:
         config.change_value('ocr_is_loading', True)
         languages = self.languages
 
-        logger.info(f'Загрузка модели EasyOCR c ' f'{", ".join(languages)}')
+        logger.info(
+            f'Loading the EasyOCR model with ' f'{", ".join(languages)}'
+        )
         self.easyocr_model = self.easyocr.Reader(languages)
-        logger.success('Модель EasyOCR была успешно загружена')
+        logger.success('The EasyOCR model was successfully loaded')
         config.change_value('ocr_is_loading', False)
 
     def load_easyocr_with_toast(self):
@@ -83,8 +85,72 @@ class App:
         else:
             self.gui.already_loaded_toast.show_toast()
 
+    def display_translated_text(self, text, image, coordinates: tuple):
+        translator = config.get_value('translator')
+        self.gui.debug_window.add_message(
+            f'{languages.get_string("translation_with")} —\n{translator}\n',
+            color='white',
+        )
+
+        translated_text = translation(
+            text=text,
+            from_lang=self.languages,
+            translator=translator,
+        )
+        logger.success('Text successfully translated')
+        logger.info(f'Translated text: {translated_text}')
+
+        text_related = {
+            'text': text,
+            'other_text': translated_text,
+            'coordinates': coordinates,
+            'use_gpt_stream': translator == 'GPT Stream',
+        }
+
+        TranslationWindow(
+            self.gui,
+            self.gui.debug_window,
+            image,
+            text_related,
+        )
+
+        self.gui.debug_window.add_message(
+            languages.get_string('transl_succeed'), 'green'
+        )
+
+    def display_dictionary_text(self, text, image, coordinates: tuple):
+        if len(text.split()) > 1:
+            self.gui.dict_only_one_word_toast.show_toast()
+            return
+
+        self.gui.debug_window.add_message(
+            languages.get_string("analysis_with"),
+            color='white',
+        )
+        output_lang = config.get_value('translation_language')
+        string_found_in_dict = find_word_in_dictionary(text, output_lang)
+        logger.success('Word successfully analyzed')
+        logger.info(f'Analyzed word: {string_found_in_dict}')
+
+        text_related = {
+            'text': text,
+            'other_text': string_found_in_dict,
+            'coordinates': coordinates,
+        }
+        DictionaryWindow(
+            self.gui,
+            self.gui.debug_window,
+            image,
+            text_related,
+        )
+
+        self.gui.debug_window.add_message(
+            languages.get_string('dict_succeed'), 'green'
+        )
+
     def snip_trigger(self, image: Image.Image, coordinates: tuple):
-        """Trigger when a screenshot is taken. Performs OCR on the image,
+        """Trigger when a screenshot is taken.
+        Performs OCR on the image,
          translates the text, and displays the result.
 
         Args:
@@ -94,48 +160,16 @@ class App:
         self.gui.debug_window.add_message(
             languages.get_string('received_screenshot'), 'green'
         )
-        self.load_easyocr_with_toast()
 
         text = TextRecognition(
             image, self.languages, self.easyocr_model, self.gui.debug_window
         ).get_text()
 
-        translator = config.get_value('translator')
-        self.gui.debug_window.add_message(
-            f'{languages.get_string("translation_with")} —\n{translator}\n',
-            color='white',
-        )
-
-        # get translated text
-        translated_text = translation(
-            text=text,
-            from_lang=self.languages,
-            translator=translator,
-        )
-        logger.success('Текст успешно переведен')
-        logger.info(f'Переведенный текст = {translated_text}')
-
-        if translator == 'GPT Stream':
-            self.use_gpt_stream = True
-
         if config.get_value('need_copy_to_clipboard'):
             pyperclip.copy(text)
 
-        # put translated text on the screen in a new tkinter window
-        x1, y1 = coordinates
-        text_related = {
-            'text': text,
-            'translated_text': translated_text,
-            'coordinates': (x1, y1),
-            'use_gpt_stream': self.use_gpt_stream,
-        }
-        TranslationWindow(
-            self.gui,
-            self.gui.debug_window,
-            image,
-            text_related,
-        )
-        self.gui.debug_window.add_message(
-            languages.get_string('transl_succeed'), 'green'
-        )
-        self.use_gpt_stream = False
+        match config.get_value('selected_mode'):
+            case 'translation':
+                self.display_translated_text(text, image, coordinates)
+            case 'dict':
+                self.display_dictionary_text(text, image, coordinates)
