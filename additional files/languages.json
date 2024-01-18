@@ -25,11 +25,14 @@
     "loaded_ocr_toast": "Модель EasyOCR загружена, программа готова к работе",
     "already_loaded_toast": "Модель EasyOCR с выбранными языками уже загружена",
     "translation_with": "Перевод при помощи",
+    "analysis_with": "Анализ слова при помощи ChatGPT",
     "waiting_for_screenshot": "Ожидание скриншота",
     "received_screenshot": "Скриншот был получен\n",
     "transl_succeed": "Перевод прошел успешно!",
+    "dict_succeed": "Анализ прошел успешно",
     "starting_recog": "Начинаю распознавание",
-    "recog_success": "Текст успешно распознан\n"
+    "recog_success": "Текст успешно распознан\n",
+    "more_than_one": "Поиск в словаре возможен только при выделении одного слова"
   },
   "ENG": {
     "translation_mode": "Translation",
@@ -57,10 +60,13 @@
     "loaded_ocr_toast": "The EasyOCR model is loaded, the program is ready to work",
     "already_loaded_toast": "EasyOCR model with selected languages already loaded",
     "translation_with": "Translation using",
+    "analysis_with": "Word analysis using ChatGPT",
     "waiting_for_screenshot": "Waiting for a screenshot",
     "received_screenshot": "The screenshot was received\n",
     "transl_succeed": "The translation was successful!",
+    "dict_succeed": "The analysis was successful",
     "starting_recog": "Starting recognition",
-    "recog_success": "Text successfully recognized\n"
+    "recog_success": "Text successfully recognized\n",
+    "more_than_one": "Searching in the dictionary is only possible when selecting one word"
   }
 }
