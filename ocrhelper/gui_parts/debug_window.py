@@ -19,14 +19,12 @@ class DebugWindow:
 
         frame = tk.Frame(self.window, width=300, height=200)
         frame.pack()
-        
+
         if config.get_value('interface_language') == 'ENG':
             img_path = r'assets/debug_label_eng.png'
         else:
             img_path = r'assets/debug_label.png'
-        img = ImageTk.PhotoImage(
-            im.open(check_path(img_path))
-        )
+        img = ImageTk.PhotoImage(im.open(check_path(img_path)))
 
         label = tk.Label(frame, image=img, background='white')
         label.image = img
