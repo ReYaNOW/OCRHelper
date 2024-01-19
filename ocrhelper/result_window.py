@@ -167,3 +167,9 @@ class DictionaryWindow(ResultWindow):
             self.dictionary_text,
         )
         dictionary_text_label.pack(expand=True, fill='x')
+
+
+class RecognitionWindow(ResultWindow):
+    def __init__(self, gui, debug_window, image, text_related):
+        super().__init__(gui, debug_window, image, text_related)
+        self._pack_recognized_text()

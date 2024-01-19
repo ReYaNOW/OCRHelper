@@ -1,6 +1,7 @@
 import tkinter as tk
 
 import customtkinter as ctk
+
 from ocrhelper.gui_parts.gui_settings import SettingsFrame
 from ocrhelper.gui_parts.settings_parts.segmented_gui import (
     TranslationLangFrame,
@@ -11,6 +12,7 @@ from ocrhelper.components import languages
 from ocrhelper.components.utils import bind_button_with_img, open_tk_img
 from ocrhelper.components.utils import check_path
 from ocrhelper.gui_parts.animation import AnimateWidget
+from ocrhelper.components.utils import create_ctk_apikey_msg_box
 
 
 class MainFrame(ctk.CTkFrame):
@@ -32,15 +34,21 @@ class MainFrame(ctk.CTkFrame):
     def _place_main_screen_buttons(self):
         string = languages.get_string('translation_mode')
         self.transl_mode_button = self.create_mode_button(string)
-        self.transl_mode_button.place(relx=0.073, rely=0.300)
+        self.transl_mode_button.place(relx=0.185, rely=0.480, anchor='center')
+
+        string = languages.get_string('recognition_mode')
+        if config.get_value('interface_language') == 'ENG':
+            offset = 0.0027
+        else:
+            offset = 0
+        self.recognition_mode_button = self.create_mode_button(string)
+        self.recognition_mode_button.place(
+            relx=0.501 + offset, rely=0.480, anchor='center'
+        )
 
         string = languages.get_string('dict_mode')
         self.dict_mode_button = self.create_mode_button(string)
-        self.dict_mode_button.place(relx=0.389, rely=0.300)
-
-        string = languages.get_string('decrypt_mode')
-        self.decrypt_mode_button = self.create_mode_button(string)
-        self.decrypt_mode_button.place(relx=0.705, rely=0.300)
+        self.dict_mode_button.place(relx=0.817, rely=0.480, anchor='center')
 
         selected_mode = config.get_value('selected_mode')
         self.change_border_selection(selected_mode)
@@ -48,10 +56,10 @@ class MainFrame(ctk.CTkFrame):
     def create_mode_button(self, text):
         if text == languages.get_string('translation_mode'):
             mode = 'translation'
-        elif text == languages.get_string('dict_mode'):
-            mode = 'dict'
+        elif text == languages.get_string('recognition_mode'):
+            mode = 'recognition'
         else:
-            mode = 'decrypt'
+            mode = 'dict'
 
         return ctk.CTkButton(
             self,
@@ -67,20 +75,23 @@ class MainFrame(ctk.CTkFrame):
         )
 
     def change_mode_var(self, selected_mode):
+        if selected_mode == 'dict' and not config.get_value('api_key_is_set'):
+            create_ctk_apikey_msg_box(self)
+            return
         self.change_border_selection(selected_mode)
         config.change_value('selected_mode', selected_mode)
 
     def change_border_selection(self, selected_mode):
         self.transl_mode_button.configure(border_width=0)
+        self.recognition_mode_button.configure(border_width=0)
         self.dict_mode_button.configure(border_width=0)
-        self.decrypt_mode_button.configure(border_width=0)
         match selected_mode:
             case 'translation':
                 self.transl_mode_button.configure(border_width=3)
-            case 'dict':
-                self.dict_mode_button.configure(border_width=3)
+            case 'recognition':
+                self.recognition_mode_button.configure(border_width=3)
             case _:
-                self.decrypt_mode_button.configure(border_width=3)
+                self.dict_mode_button.configure(border_width=3)
 
     def create_languages_frame(self):
         languages_frame = ctk.CTkFrame(

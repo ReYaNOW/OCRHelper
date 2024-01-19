@@ -12,7 +12,8 @@ from ocrhelper.components.utils import check_path
 from ocrhelper.components.utils import find_word_in_dictionary
 from ocrhelper.gui import Gui
 from ocrhelper.ocr import TextRecognition
-from ocrhelper.translation_window import TranslationWindow, DictionaryWindow
+from ocrhelper.result_window import TranslationWindow, DictionaryWindow
+from ocrhelper.result_window import RecognitionWindow
 
 
 class App:
@@ -148,6 +149,18 @@ class App:
             languages.get_string('dict_succeed'), 'green'
         )
 
+    def display_only_recogn_text(self, text, image, coordinates):
+        text_related = {
+            'text': text,
+            'coordinates': coordinates,
+        }
+        RecognitionWindow(
+            self.gui,
+            self.gui.debug_window,
+            image,
+            text_related,
+        )
+
     def snip_trigger(self, image: Image.Image, coordinates: tuple):
         """Trigger when a screenshot is taken.
         Performs OCR on the image,
@@ -173,3 +186,5 @@ class App:
                 self.display_translated_text(text, image, coordinates)
             case 'dict':
                 self.display_dictionary_text(text, image, coordinates)
+            case _:
+                self.display_only_recogn_text(text, image, coordinates)
