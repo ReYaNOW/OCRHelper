@@ -68,6 +68,7 @@ class Gui(ctk.CTk):
             self,
             message=languages.get_string('load_ocr_toast'),
             icon_color='orange',
+            duration=None,
         )
         self.loaded_ocr_toast = ToastNotification(
             self,
