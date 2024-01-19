@@ -34,7 +34,7 @@ class ToastNotification:
             icon_color (str):
                 Change color of icon to custom.
 
-            duration (int):
+            duration (int | None):
                 The number of milliseconds to show the toast.
                 If None, then you must click the toast to close it.
 
