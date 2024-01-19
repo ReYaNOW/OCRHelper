@@ -1,9 +1,9 @@
 import customtkinter as ctk
-from CTkMessagebox import CTkMessagebox
 
 from ocrhelper.components import config
 from ocrhelper.components import languages
 from ocrhelper.gui_parts.toast import ToastNotification
+from ocrhelper.components.utils import create_ctk_apikey_msg_box
 
 
 class SegmentedFrame(ctk.CTkFrame):
@@ -45,14 +45,7 @@ class TranslatorsFrame(SegmentedFrame):
         if not config.get_value('api_key_is_set'):
             self.var.set('Google')
             self.update()
-            CTkMessagebox(
-                title='OCRHelper',
-                message=languages.get_string('pls_enter_api'),
-                font=(config.get_font_name(), 14),
-                button_color='#5429FE',
-                button_hover_color='#4a1e9e',
-                corner_radius=7,
-            )
+            create_ctk_apikey_msg_box(self)
         else:
             config.change_value('translator', self.var.get())
 
