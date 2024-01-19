@@ -1,3 +1,4 @@
+[![Linter check](https://github.com/ReYaNOW/OCRHelper/actions/workflows/pyci.yml/badge.svg)](https://github.com/ReYaNOW/OCRHelper/actions/workflows/action_tests.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/f5372d1edda7c846d573/maintainability)](https://codeclimate.com/github/ReYaNOW/OCRHelper/maintainability)
 ![Static Badge](https://img.shields.io/badge/total_lines-2.2k-blue)
 
