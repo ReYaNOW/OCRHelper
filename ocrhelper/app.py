@@ -15,6 +15,7 @@ from ocrhelper.ocr import TextRecognition
 from ocrhelper.result_window import TranslationWindow, DictionaryWindow
 from ocrhelper.result_window import RecognitionWindow
 
+
 class App:
     """Create a GUI for an OCR (Optical Character Recognition) application."""
 
