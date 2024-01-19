@@ -2,11 +2,15 @@ import os
 import tkinter as tk
 from random import randint
 
-import openai
-from PIL import Image, ImageTk
 import keyring
+import openai
+from CTkMessagebox import CTkMessagebox
+from PIL import Image, ImageTk
+import pyperclip
 
 import customtkinter as ctk
+from components import languages, config
+from ocrhelper.gui_parts.toast import ToastNotification
 
 
 def create_stylish_button(master, **kwargs):
@@ -68,6 +72,26 @@ def validate_key(key):
         return True
     except openai.error.AuthenticationError:
         return False
+
+
+def create_ctk_apikey_msg_box(master):
+    message = CTkMessagebox(
+        title='OCRHelper',
+        message=languages.get_string('pls_enter_api'),
+        option_1=languages.get_string('create_api_key'),
+        option_2='OK',
+        font=(config.get_font_name(), 14),
+        button_color='#5429FE',
+        button_hover_color='#4a1e9e',
+        corner_radius=7,
+    )
+    if message.get() == languages.get_string('create_api_key'):
+        pyperclip.copy('https://platform.openai.com/api-keys')
+        ToastNotification(
+            master,
+            message=languages.get_string('url_was_copied'),
+            icon_color='#00E81A',
+        ).show_toast()
 
 
 def find_word_in_dictionary(word, to_lang):
