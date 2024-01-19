@@ -1,7 +1,7 @@
 import json
 
-from components import config
-from components.utils import check_path
+from ocrhelper.components import config
+from ocrhelper.components.utils import check_path
 
 with open(
     check_path('additional files/languages.json'), encoding='utf-8'

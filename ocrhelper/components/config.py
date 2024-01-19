@@ -1,6 +1,6 @@
 import json
 
-from components.utils import check_path
+from ocrhelper.components.utils import check_path
 
 
 def get_value(key):

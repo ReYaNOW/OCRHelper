@@ -9,7 +9,7 @@ from PIL import Image, ImageTk
 import pyperclip
 
 import customtkinter as ctk
-from components import languages, config
+from ocrhelper.components import languages, config
 from ocrhelper.gui_parts.toast import ToastNotification
 
 

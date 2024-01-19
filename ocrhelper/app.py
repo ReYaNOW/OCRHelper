@@ -5,7 +5,7 @@ import pyperclip
 from PIL import Image
 from loguru import logger
 
-from components import languages
+from ocrhelper.components import languages
 from ocrhelper.components import config
 from ocrhelper.components.translation import translation
 from ocrhelper.components.utils import check_path
