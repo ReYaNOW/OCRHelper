@@ -93,11 +93,7 @@ class App:
             color='white',
         )
 
-        translated_text = translation(
-            text=text,
-            from_lang=self.languages,
-            translator=translator,
-        )
+        translated_text = translation(text=text)
         logger.success('Text successfully translated')
         logger.info(f'Translated text: {translated_text}')
 

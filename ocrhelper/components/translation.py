@@ -6,9 +6,12 @@ import keyring
 from ocrhelper.components import config
 
 
-def translation(text, from_lang, translator='Google'):
-    logger.info(f'Translation using {translator}')
+def translation(text):
+    from_lang = config.get_value('recognition_languages')
+    translator = config.get_value('translator')
     to_lang = to_lang_convert(config.get_value('translation_language'))
+
+    logger.info(f'Translation using {translator}')
     match translator:
         case 'Google':
             if len(from_lang) == 1 or from_lang not in ('ru', 'en'):
