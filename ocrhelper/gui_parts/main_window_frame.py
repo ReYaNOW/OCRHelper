@@ -103,7 +103,7 @@ class MainFrame(ctk.CTkFrame):
             corner_radius=12,
         )
 
-        interface_language_frame = LanguageFrame(languages_frame, 210, 80)
+        interface_language_frame = LanguageFrame(languages_frame, 214, 80)
         interface_language_frame.place(relx=0.25, rely=0.5, anchor='center')
 
         translation_lang_frame = TranslationLangFrame(languages_frame, 232, 80)
