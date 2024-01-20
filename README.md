@@ -26,7 +26,7 @@
   <li>Windows 10 build 19041 (20H1) / Windows 11</li>
   <li>DirectX11</li>
   <li>1 GB free RAM</li>
-  <li>5 GB free storage space/ 3 GB for without_cuda version</li>
+  <li>5 GB free storage space/ 1 GB for without_cuda version</li>
   <li>Nvidia GPU with CUDA SDK 11.8 support (GTX 750, 8xxM, 9xx series or later) <i>(for mode using CUDA)</i></li>
 </ul>
 
