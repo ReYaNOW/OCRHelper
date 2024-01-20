@@ -28,7 +28,7 @@
 <ul>
   <li>Windows 10 build 19041 (20H1) / Windows 11</li>
   <li>DirectX11</li>
-  <li>8 GB ОЗУ</li>
+  <li>1 GB свободной ОЗУ</li>
   <li>5 GB свободного места на диске / 1 GB для режима без CUDA</li>
   <li>Nvidia GPU с поддержкой CUDA SDK 11.8 (GTX 750, 8xxM, 9xx серия или новее) <i>(для режима с использованием CUDA)</i></li>
 </ul>
