@@ -33,7 +33,7 @@
 <h1>How to use</h1>
 <img src="https://github.com/ReYaNOW/repo_for_gifs/blob/main/ocrhelper/demo.gif?raw=true" alt="">
 <ol>
-<li>Choose the version that suits you: the regular version weighs more and takes more time to start, but reads text faster, the without_cuda version is the opposite (you can download any of them here https://github.com/ReYaNOW/OCRHelper/releases)</li>
+<li>Choose the version that suits you: the regular version weighs more and takes more time to start, but reads text faster, the without_cuda version is the opposite (you can download any of them <a href="https://github.com/ReYaNOW/OCRHelper/releases">here</a>)</li>
 <li>Launch the application (The first launch will take much longer than the subsequent ones)</li>
   <li>Open the menu using CTRL + ALT + X or via the tray</li>
   <li>Open the settings</li>
