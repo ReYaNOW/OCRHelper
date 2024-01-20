@@ -53,6 +53,8 @@
 <p>If the game doesn't have such mode, you can use external tools to make it borderless (e.g. <a href="https://github.com/Codeusa/Borderless-Gaming">Borderless Gaming</a>)</p>
 <h3>Install the application on SSD</h3>
 <p>To reduce cold launch time with enabled EasyOCR engine (loading large EasyOCR model into RAM).</p>
+<h3>Error</h3>
+<p>If an error occurs while running the application, please create a new issue in the Issues tab. I will try to respond to the problem as soon as I see it.</p>
 
 <h1>TODO</h1>
 <ul>
