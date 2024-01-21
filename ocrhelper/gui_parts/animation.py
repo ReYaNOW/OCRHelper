@@ -31,7 +31,7 @@ class AnimateWidget:
         else:
             self.animation_started = False
         self.widget_on_screen = True
-    
+
     def animate_backwards(self):
         if self.move_from == 'top' and self.pos > self.end_pos:
             self.pos -= 0.035
