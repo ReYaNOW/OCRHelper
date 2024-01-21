@@ -24,27 +24,23 @@ class AnimateWidget:
             self.pos += 0.035
             self.widget.place(relx=self.rel_x_pos, rely=self.pos, anchor='sw')
             self.widget.after(15, self.animate_forward)
-            self.widget_on_screen = True
         elif self.move_from == 'bottom' and self.pos > self.start_pos:
             self.pos -= 0.035
             self.widget.place(relx=self.rel_x_pos, rely=self.pos, anchor='nw')
             self.widget.after(15, self.animate_forward)
-            self.widget_on_screen = True
         else:
             self.animation_started = False
-            self.widget_on_screen = True
-
+        self.widget_on_screen = True
+    
     def animate_backwards(self):
         if self.move_from == 'top' and self.pos > self.end_pos:
             self.pos -= 0.035
             self.widget.place(relx=self.rel_x_pos, rely=self.pos, anchor='sw')
             self.widget.after(15, self.animate_backwards)
-            self.widget_on_screen = False
         elif self.move_from == 'bottom' and self.pos < self.end_pos:
             self.pos += 0.035
             self.widget.place(relx=self.rel_x_pos, rely=self.pos, anchor='nw')
             self.widget.after(15, self.animate_backwards)
-            self.widget_on_screen = False
         else:
             self.animation_started = False
-            self.widget_on_screen = False
+        self.widget_on_screen = False
