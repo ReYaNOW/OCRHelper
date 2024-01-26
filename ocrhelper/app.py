@@ -17,8 +17,6 @@ from ocrhelper.result_window import RecognitionWindow
 
 
 class App:
-    """Create a GUI for an OCR (Optical Character Recognition) application."""
-
     def __init__(self):
         self.easyocr = None
         self.easyocr_model = None
@@ -36,7 +34,7 @@ class App:
         self.ocr_is_loaded = False
 
         if first_time:
-            target = self.easyocr_first_time_load
+            target = self.easyocr_first_time_load_with_lazy_import
         else:
             target = self.load_easyocr_model
         thread = threading.Thread(target=target)
@@ -51,7 +49,7 @@ class App:
             self.gui.loaded_ocr_toast.show_toast()
             self.ocr_is_loaded = True
 
-    def easyocr_first_time_load(self):
+    def easyocr_first_time_load_with_lazy_import(self):
         logger.info('Importing EasyOCR module')
         import easyocr
 
@@ -77,7 +75,7 @@ class App:
         config.change_value('ocr_is_loading', False)
 
     def load_easyocr_with_toast(self):
-        """Load EasyOCR with some languages
+        """Load EasyOCR with selected languages
         if they are changed from a previous load"""
         new_languages = config.get_value('recognition_languages')
         if self.languages != new_languages:
