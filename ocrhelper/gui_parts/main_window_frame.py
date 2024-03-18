@@ -160,6 +160,7 @@ class MainFrame(ctk.CTkFrame):
         )
 
     def animation_handler(self, widget_to_move):
+        """Handler to prevent some animation glitches of moving CTKFrames"""
         if self.handler_working:
             return
         self.handler_working = True
