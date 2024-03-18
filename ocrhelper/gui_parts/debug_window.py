@@ -62,6 +62,8 @@ class DebugWindow:
 
 
 class DebugWindowNullObject:
+    """NullObject version of DebugWindow that will be used when usage
+     of debug window is not selected"""
     def __init__(self, master):
         self.master = master
 
