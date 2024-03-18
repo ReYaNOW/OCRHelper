@@ -29,6 +29,7 @@ class App:
         self.gui.mainloop()
 
     def load_ocr_threading(self, first_time=False):
+        """Load EasyOCR model with threading"""
         self.gui.load_ocr_toast.show_toast()
         self.gui.update()
         self.ocr_is_loaded = False
@@ -42,6 +43,7 @@ class App:
         self.check_thread(thread)
 
     def check_thread(self, thread):
+        """Check if loading of EasyOCR model with threading is ended"""
         if thread.is_alive():
             self.gui.after(100, lambda: self.check_thread(thread))
         else:
@@ -50,6 +52,8 @@ class App:
             self.ocr_is_loaded = True
 
     def easyocr_first_time_load_with_lazy_import(self):
+        """Make the first load of EasyOCR model with first character
+        recognition to increase the speed of future ones"""
         logger.info('Importing EasyOCR module')
         import easyocr
 
